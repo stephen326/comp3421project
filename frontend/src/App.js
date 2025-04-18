@@ -9,7 +9,8 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<ResultPage />} />
+        <Route path="/result-page" element={<ResultPage />} />
+        <Route path="/query-page" element={<QueryPage />} />
         <Route path="/create-survey" element={<CreateSurvey />} />
       </Routes>
     </Router>
