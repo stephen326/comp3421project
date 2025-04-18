@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import '../styles/createpoll.css'; // 引入样式文件 
 
 // 创建投票组件
 const CreatePoll = () => {
@@ -93,10 +94,9 @@ const CreatePoll = () => {
     };
 
     return (
-        <div>
-            <h1>创建新投票</h1>
-            <form onSubmit={handleSubmit}>
-                {/* 投票标题 */}
+        <div className="create-poll-container">
+            <h1 className="create-poll-title">创建新投票</h1>
+            <form onSubmit={handleSubmit} className="create-poll-form">
                 <div>
                     <label>投票标题：</label>
                     <input
@@ -106,7 +106,6 @@ const CreatePoll = () => {
                         placeholder="请输入投票标题"
                     />
                 </div>
-                {/* 投票描述 */}
                 <div>
                     <label>投票描述：</label>
                     <textarea
@@ -115,10 +114,8 @@ const CreatePoll = () => {
                         placeholder="请输入投票描述"
                     />
                 </div>
-                {/* 题目和选项 */}
                 {questions.map((question, qIndex) => (
-                    <div key={qIndex} style={{ marginBottom: '20px' }}>
-                        {/* 题目标题 */}
+                    <div key={qIndex} className="question-container">
                         <div>
                             <label>题目 {qIndex + 1}：</label>
                             <input
@@ -128,16 +125,19 @@ const CreatePoll = () => {
                                 placeholder="请输入题目标题"
                             />
                             {questions.length > 1 && (
-                                <button type="button" onClick={() => removeQuestion(qIndex)}>
+                                <button
+                                    type="button"
+                                    onClick={() => removeQuestion(qIndex)}
+                                    className="delete-button"
+                                >
                                     删除题目
                                 </button>
                             )}
                         </div>
-                        {/* 选项列表 */}
                         <div>
                             <label>选项：</label>
                             {question.options.map((option, oIndex) => (
-                                <div key={oIndex}>
+                                <div key={oIndex} className="option-container">
                                     <input
                                         type="text"
                                         value={option}
@@ -145,25 +145,43 @@ const CreatePoll = () => {
                                         placeholder={`选项 ${oIndex + 1}`}
                                     />
                                     {question.options.length > 1 && (
-                                        <button type="button" onClick={() => removeOption(qIndex, oIndex)}>
+                                        <button
+                                            type="button"
+                                            onClick={() => removeOption(qIndex, oIndex)}
+                                            className="delete-button"
+                                        >
                                             删除选项
                                         </button>
                                     )}
                                 </div>
                             ))}
-                            <button type="button" onClick={() => addOption(qIndex)}>
+                            <button
+                                type="button"
+                                onClick={() => addOption(qIndex)}
+                                className="add-option-button"
+                            >
                                 添加选项
                             </button>
                         </div>
                     </div>
                 ))}
-                {/* 添加题目和提交按钮 */}
-                <button type="button" onClick={addQuestion}>
-                    添加题目
-                </button>
-                <button type="submit">提交</button>
+                <div className="button-group">
+                    <button
+                        type="button"
+                        onClick={addQuestion}
+                        className="add-question-button"
+                    >
+                        添加题目
+                    </button>
+                    <button
+                        type="submit"
+                        className="submit-button"
+                    >
+                        提交
+                    </button>
+                </div>
             </form>
-            {message && <p>{message}</p>}
+            {message && <p className="create-poll-message">{message}</p>}
         </div>
     );
 };

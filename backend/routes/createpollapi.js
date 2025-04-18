@@ -41,16 +41,30 @@ router.post('/', async (req, res) => {
         const pollId = pollResult.insertId;
         console.log('插入的投票 ID:', pollId);
 
-        // 插入每个问题和选项到 poll_options 表
-        for (const question of questions) {
-            const { options } = question;
+        // 全局变量，用于生成 question_id 和 option_id
+        let globalQuestionId = 1;
 
-            console.log(`正在处理问题: ${question.title}`);
-            for (const option of options) {
-                console.log(`插入选项: ${option}`);
+        // 插入每个问题到 question 表，并插入选项到 poll_options 表
+        for (const question of questions) {
+            const { title: questionTitle, options } = question;
+
+            // 生成 question_id
+            const questionId = globalQuestionId++;
+            console.log(`正在插入问题: ${questionTitle}，生成的 question_id: ${questionId}`);
+
+            // 插入问题到 question 表
+            await connection.query(
+                'INSERT INTO question (question_id, question_text) VALUES (?, ?)',
+                [questionId, questionTitle]
+            );
+
+            // 插入选项到 poll_options 表
+            let optionId = 1; // 每个问题的选项从 1 开始
+            for (const optionText of options) {
+                console.log(`插入选项: ${optionText}，关联的 question_id: ${questionId}, option_id: ${optionId}`);
                 await connection.query(
-                    'INSERT INTO poll_options (poll_id, option_text) VALUES (?, ?)',
-                    [pollId, option]
+                    'INSERT INTO poll_options (poll_id, question_id, option_id, option_text) VALUES (?, ?, ?, ?)',
+                    [pollId, questionId, optionId++, optionText]
                 );
             }
         }
