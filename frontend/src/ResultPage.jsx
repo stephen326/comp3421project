@@ -1,9 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useLayoutEffect, useEffect } from 'react';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import 'tailwindcss/tailwind.css';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
+
+const colorPalette = [
+  "#FF6B6B",
+  "#4ECDC4",
+  "#45B7D1",
+  "#96CEB4",
+  "#FFEEAD",
+  "#D4A5A5"
+];
 
 // Sample data for questions and results
 const questions = [
@@ -12,44 +21,51 @@ const questions = [
   { id: 3, text: 'Question 3: How easy was the interface to use?' },
 ];
 
+const labelData = [
+  ['Very Satisfied', 'Satisfied', 'Neutral', 'Dissatisfied'],
+  ['Yes', 'No', 'Maybe'],
+  ['Very Easy', 'Easy', 'Moderate', 'Difficult'],
+];
+
 const resultData = [
-  {
-    labels: ['Very Satisfied', 'Satisfied', 'Neutral', 'Dissatisfied'],
-    datasets: [
-      {
-        data: [40, 30, 20, 10],
-        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'],
-        hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'],
-      },
-    ],
-  },
-  {
-    labels: ['Yes', 'No', 'Maybe'],
-    datasets: [
-      {
-        data: [60, 20, 20],
-        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
-        hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
-      },
-    ],
-  },
-  {
-    labels: ['Very Easy', 'Easy', 'Moderate', 'Difficult'],
-    datasets: [
-      {
-        data: [50, 30, 15, 5],
-        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'],
-        hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'],
-      },
-    ],
-  },
+  [40, 30, 20, 10],
+  [60, 20, 20],
+  [50, 30, 15, 5]
 ];
 
 const ResultPage = () => {
   const [selectedQuestion, setSelectedQuestion] = useState(0);
+  const [ws, setWs] = useState(null);
+  const [messages, setMessages] = useState([]);
+  const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    const websocket = new WebSocket('ws://127.0.0.1:8080');
+    websocket.onmessage = (evt) => {
+      const data = JSON.parse(evt.data);
+      resultData[data.index] = data.data;
+    };
+    setWs(websocket);
+
+    return () => {
+      websocket.close();
+    };
+  }, []);
 
   const handleQuestionClick = (index) => {
     setSelectedQuestion(index);
+  };
+
+  // 美味的预制data(?)
+  const chartData = {
+    labels: labelData[selectedQuestion],
+    datasets: [
+      {
+        data: resultData[selectedQuestion],
+        backgroundColor: colorPalette,
+        hoverOffset: 4
+      },
+    ],
   };
 
   return (
@@ -80,7 +96,7 @@ const ResultPage = () => {
             {questions[selectedQuestion].text}
           </h2>
           <Doughnut
-            data={resultData[selectedQuestion]}
+            data={chartData}
             options={{
               plugins: {
                 legend: {
