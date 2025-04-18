@@ -32,6 +32,15 @@ async function initializeDatabase() {
         // 切换到目标数据库
         await connection.query(`USE ${process.env.DB_DATABASE}`);
 
+        // 删除表（如果存在）
+        console.log('检查并删除表（如果存在）...');
+        await connection.query(`DROP TABLE IF EXISTS poll_options`);
+        console.log('表 poll_options 已删除（如果存在）');
+        await connection.query(`DROP TABLE IF EXISTS polls`);
+        console.log('表 polls 已删除（如果存在）');
+        await connection.query(`DROP TABLE IF EXISTS question`);
+        console.log('表 question 已删除（如果存在）');
+
         // 创建投票表 (polls)
         await connection.query(`
             CREATE TABLE IF NOT EXISTS polls (
@@ -42,14 +51,27 @@ async function initializeDatabase() {
         `);
         console.log('表创建成功或已存在: polls');
 
+        // 创建问题表 (question)
+        await connection.query(`
+            CREATE TABLE IF NOT EXISTS question (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                question_id VARCHAR(255) NOT NULL UNIQUE,
+                question_text VARCHAR(255) NOT NULL
+            );
+        `);
+        console.log('表创建成功或已存在: question');
+
         // 创建投票选项表 (poll_options)
         await connection.query(`
             CREATE TABLE IF NOT EXISTS poll_options (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 poll_id INT,
+                question_id VARCHAR(255) NOT NULL,
+                option_id VARCHAR(255) NOT NULL,
                 option_text VARCHAR(255) NOT NULL,
                 vote_count INT DEFAULT 0,
-                FOREIGN KEY (poll_id) REFERENCES polls(id) ON DELETE CASCADE
+                FOREIGN KEY (poll_id) REFERENCES polls(id) ON DELETE CASCADE,
+                FOREIGN KEY (question_id) REFERENCES question(question_id) ON DELETE CASCADE
             );
         `);
         console.log('表创建成功或已存在: poll_options');

@@ -30,15 +30,13 @@ initializeDatabase()
         console.error('数据库初始化失败:', err);
     });
 
+const createpollRouter = require('./routes/createpollapi'); // 创建投票相关的路由
 
 // Routes
 // ==========================================
 app.get('/', (req, res) => {
     res.send('Welcome to the backend server! Use /api/db-test or /api/polls to access the APIs.');
 });
-app.use('/api/db-test', dbTestRouter);
-app.use('/api/polls', pollsRouter);
-
 
 // websocket register
 // ==========================================
@@ -58,6 +56,8 @@ io.on('connection', (socket) => {
     console.log('✅ 有客户端连接:', socket.id);
     pollSocket(io, socket);
 });
+
+app.use('/api/createpoll', createpollRouter); // 将创建投票路由挂载到 /api/createpoll 路径
 
 // Start the server
 // ==========================================
