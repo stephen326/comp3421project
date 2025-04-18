@@ -33,27 +33,6 @@ router.get('/test-connection', async (req, res) => {
     }
 });
 
-
-router.get('/create-polls-table', async (req, res) => {
-    try {
-        const connection = await mysql.createConnection(connectionConfig);
-        await connection.query(`
-            CREATE TABLE IF NOT EXISTS polls (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                title VARCHAR(255) NOT NULL,
-                description TEXT
-            );
-        `);
-        await connection.end();
-        res.status(200).json({ message: '投票表创建成功或已存在！' });
-    } catch (error) {
-        console.error('创建投票表失败:', error);
-        res.status(500).json({ error: '创建投票表失败', details: error.message });
-    }
-});
-
-
-
 // 查询所有投票
 router.get('/polls', async (req, res) => {
     try {
