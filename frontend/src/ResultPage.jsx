@@ -1,5 +1,6 @@
 import React, { useState, useRef, useLayoutEffect, useEffect } from 'react';
 import { Doughnut } from 'react-chartjs-2';
+import { io } from 'socket.io-client';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import 'tailwindcss/tailwind.css';
 
@@ -16,15 +17,12 @@ const colorPalette = [
 
 // Sample data for questions and results
 const questions = [
-  { id: 1, text: 'Question 1: How satisfied are you with the product?' },
-  { id: 2, text: 'Question 2: Would you recommend our service?' },
-  { id: 3, text: 'Question 3: How easy was the interface to use?' },
-];
-
-const labelData = [
-  ['Very Satisfied', 'Satisfied', 'Neutral', 'Dissatisfied'],
-  ['Yes', 'No', 'Maybe'],
-  ['Very Easy', 'Easy', 'Moderate', 'Difficult'],
+  { id: 1, text: 'Question 1: How satisfied are you with the product?',
+    labels: ['Very Satisfied', 'Satisfied', 'Neutral', 'Dissatisfied'] },
+  { id: 2, text: 'Question 2: Would you recommend our service?',
+    labels: ['Yes', 'No', 'Maybe'] },
+  { id: 3, text: 'Question 3: How easy was the interface to use?',
+    labels: ['Very Easy', 'Easy', 'Moderate', 'Difficult'] },
 ];
 
 const resultData = [
@@ -33,23 +31,22 @@ const resultData = [
   [50, 30, 15, 5]
 ];
 
+const socket = io('http://localhost:5000'); // 根据你的后端端口修改
+const POLL_ID = 1; // 假设是第一个问卷
+
 const ResultPage = () => {
   const [selectedQuestion, setSelectedQuestion] = useState(0);
-  const [ws, setWs] = useState(null);
-  const [messages, setMessages] = useState([]);
-  const [message, setMessage] = useState('');
+  const [data, setData] = useState(resultData);
 
   useEffect(() => {
-    const websocket = new WebSocket('ws://127.0.0.1:8080');
-    websocket.onmessage = (evt) => {
-      const data = JSON.parse(evt.data);
-      resultData[data.index] = data.data;
-    };
-    setWs(websocket);
+    // use api to fech the json
 
-    return () => {
-      websocket.close();
-    };
+    socket.emit('joinPoll', POLL_ID);
+    socket.on('updateVotes', (d) => {
+      data[1] = d.map((opt) => opt.vote_count);
+      setData(data);
+    });
+    return () => socket.off('updateVotes');
   }, []);
 
   const handleQuestionClick = (index) => {
@@ -58,7 +55,7 @@ const ResultPage = () => {
 
   // 美味的预制data(?)
   const chartData = {
-    labels: labelData[selectedQuestion],
+    labels: questions[selectedQuestion].labels,
     datasets: [
       {
         data: resultData[selectedQuestion],
