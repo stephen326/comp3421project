@@ -1,0 +1,71 @@
+/* 容器样式 */
+.create-poll-container {
+    @apply max-w-3xl mx-auto p-8 bg-white rounded-lg shadow-lg;
+}
+
+/* 标题样式 */
+.create-poll-title {
+    @apply text-3xl font-bold text-center mb-8 text-blue-600;
+}
+
+/* 表单样式 */
+.create-poll-form label {
+    @apply block text-lg font-medium text-gray-700 mb-2;
+}
+
+.create-poll-form input,
+.create-poll-form textarea {
+    @apply w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500;
+}
+
+.create-poll-form textarea {
+    @apply resize-none;
+}
+
+/* 按钮样式 */
+.create-poll-form button {
+    @apply px-6 py-3 font-semibold text-white rounded-lg shadow-md transition-all;
+}
+
+.create-poll-form button:hover {
+    @apply transform hover:scale-105;
+}
+
+/* 添加选项按钮 */
+.create-poll-form .add-option-button {
+    @apply bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2;
+}
+
+/* 添加题目按钮 */
+.create-poll-form .add-question-button {
+    @apply bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2;
+}
+
+/* 提交按钮 */
+.create-poll-form .submit-button {
+    @apply bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2;
+}
+
+/* 删除按钮 */
+.create-poll-form .delete-button {
+    @apply bg-red-500 text-white hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2;
+}
+
+/* 提示信息样式 */
+.create-poll-message {
+    @apply mt-6 text-center text-red-500 font-bold;
+}
+
+/* 题目和选项区域样式 */
+.create-poll-form .question-container {
+    @apply p-4 mb-6 bg-gray-50 rounded-lg border border-gray-200;
+}
+
+.create-poll-form .option-container {
+    @apply flex items-center space-x-4 mb-4;
+}
+
+/* 按钮组样式 */
+.create-poll-form .button-group {
+    @apply flex space-x-4 mt-4;
+}
