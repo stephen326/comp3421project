@@ -1,42 +1,62 @@
 const pool = require('./db/db');
 
-const getPollOptions = async (pollId) => {
-  console.log(`[getPollOptions] 获取投票选项，pollId: ${pollId}`);
-  const [rows] = await pool.query(
-    `SELECT id, option_text, vote_count FROM poll_options WHERE poll_id = ?`,
-    [pollId]
-  );
-  console.log(`[getPollOptions] 查询结果:`, rows);
-  return rows;
-};
-
 module.exports = (io, socket) => {
-  socket.on('joinPoll', async (pollId) => {
-    console.log(`[joinPoll] 用户尝试加入投票，pollId: ${pollId}`);
-    try {
-      socket.join(`poll-${pollId}`);
-      console.log(`[joinPoll] 用户已加入房间: poll-${pollId}`);
-      const options = await getPollOptions(pollId);
-      console.log(`[joinPoll] 发送投票选项给客户端:`, options);
-      socket.emit('updateVotes', options);
-    } catch (err) {
-      console.error('[joinPoll] 出错:', err);
-    }
-  });
+    socket.on('joinPollRoom', async (pollId) => {
+        try {
+            // Join new room
+            socket.leaveAll(); // Leave all previous rooms
+            socket.join(`poll-${pollId}`);
+            console.log(`[joinPollRoom] 用户已加入房间: poll-${pollId}`);            
+        } catch (err) {
+            console.error('[joinPollRoom] 出错:', err);
+        }
+    });
 
-  socket.on('vote', async ({ pollId, optionId }) => {
-    console.log(`[vote] 用户投票，pollId: ${pollId}, optionId: ${optionId}`);
-    try {
-      const updateResult = await pool.query(
-        `UPDATE poll_options SET vote_count = vote_count + 1 WHERE id = ? AND poll_id = ?`,
-        [optionId, pollId]
-      );
-      console.log(`[vote] 更新投票计数结果:`, updateResult);
-      const updatedOptions = await getPollOptions(pollId);
-      console.log(`[vote] 广播更新后的投票选项:`, updatedOptions);
-      io.to(`poll-${pollId}`).emit('updateVotes', updatedOptions);
-    } catch (err) {
-      console.error('[vote] 出错:', err);
-    }
-  });
+    socket.on('vote', async ({ pollId, answers }) => {
+        console.log(`[vote] 用户投票，pollId: ${pollId}, answers: ${JSON.stringify(answers)}`);
+        try {
+            // 构建批量更新的 SQL 查询
+            const updatePromises = answers.map(({ questionId, optionId }) =>
+                pool.query(
+                    `UPDATE poll_options SET vote_count = vote_count + 1 WHERE option_id = ? AND question_id = ? AND poll_id = ?`,
+                    [optionId, questionId, pollId]
+                )
+            );
+            await Promise.all(updatePromises);
+    
+            // 查询所有更新后的选项
+            const updatedOptionsQuery = `
+                SELECT question_id, option_id, vote_count
+                FROM poll_options
+                WHERE poll_id = ? AND (${answers.map(() => '(question_id = ? AND option_id = ?)').join(' OR ')})
+            `;
+            const queryParams = [pollId, ...answers.flatMap(({ questionId, optionId }) => [questionId, optionId])];
+            const [updatedOptions] = await pool.query(updatedOptionsQuery, queryParams);
+    
+            // 广播更新后的选项，并加入 pollId
+            io.to(`poll-${pollId}`).emit('updateVotes', { pollId, updatedOptions });
+            console.log(`[vote] 广播更新后的投票选项:`, { pollId, updatedOptions });
+        } catch (err) {
+            console.error('[vote] 出错:', err);
+            socket.emit('voteError', { message: '投票失败，请稍后重试。' });
+        }
+    });
 };
+
+// vote 事件的 payload 结构：
+// {
+//     "pollId": 1,
+//     "answers": [
+//       { "questionId": "q1", "optionId": "1" },
+//       { "questionId": "q2", "optionId": "5" }
+//     ]
+//   }
+
+// 每次vote后 广播的数据结构：
+// {
+//     "pollId": 1,
+//     "updatedOptions": [
+//       { "question_id": "q1", "option_id": "1", "vote_count": 10 },
+//       { "question_id": "q2", "option_id": "5", "vote_count": 5 }
+//     ]
+//   }
