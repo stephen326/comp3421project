@@ -19,7 +19,7 @@ const questions = [
     {
       id: 1,
       text: "How often do you purchase our product?",
-      options: ["Daily", "Weekly", "Monthly", "Rarely"]
+      options: ["Daily", "Weekly", "Monthly", "Rarely", "Rarely", "Rarely", "Rarely", "Rarely", "Rarely", "Rarely", "Rarely", "Rarely"]
     },
     {
       id: 2,
@@ -34,7 +34,7 @@ const questions = [
   ];
 
 const resultData = [
-  [40, 30, 20, 11],
+  [40, 30, 20, 11, 11, 11, 11, 11, 11, 11, 11, 11],
   [60, 20, 20],
   [50, 30, 15, 5]
 ];
@@ -47,13 +47,13 @@ const ResultPage = () => {
   const [data, setData] = useState(resultData);
 
   useEffect(() => {
-    // use api to fech the json
+    // TODO: use api to fech the json
 
     socket.emit('joinPoll', POLL_ID);
-    socket.on('updateVotes', (d) => {
-      data[1] = d.map((opt) => opt.vote_count);
-      setData(data);
+    socket.on('updateVotes', (update) => {
+      setData(update);
     });
+
     return () => socket.off('updateVotes');
   }, []);
 
@@ -66,7 +66,7 @@ const ResultPage = () => {
     labels: questions[selectedQuestion].options,
     datasets: [
       {
-        data: resultData[selectedQuestion],
+        data: data[selectedQuestion],
         backgroundColor: colorPalette,
         hoverOffset: 4,
         borderWidth: 1

@@ -6,7 +6,7 @@ module.exports = (io, socket) => {
             // Join new room
             socket.leaveAll(); // Leave all previous rooms
             socket.join(`poll-${pollId}`);
-            console.log(`[joinPollRoom] 用户已加入房间: poll-${pollId}`);            
+            console.log(`[joinPollRoom] 用户已加入房间: poll-${pollId}`);
         } catch (err) {
             console.error('[joinPollRoom] 出错:', err);
         }
@@ -23,18 +23,21 @@ module.exports = (io, socket) => {
                 )
             );
             await Promise.all(updatePromises);
-    
+
             // 查询所有更新后的选项
             const updatedOptionsQuery = `
                 SELECT question_id, option_id, vote_count
                 FROM poll_options
-                WHERE poll_id = ? AND (${answers.map(() => '(question_id = ? AND option_id = ?)').join(' OR ')})
+                WHERE poll_id = ?
             `;
-            const queryParams = [pollId, ...answers.flatMap(({ questionId, optionId }) => [questionId, optionId])];
+            const queryParams = [pollId];
             const [updatedOptions] = await pool.query(updatedOptionsQuery, queryParams);
-    
+
+          // turn into 2d array, using defending programming (?)
+          const arrayData = Object.values(Object.groupBy(updatedOptions, (opt) => opt.question_id)).map((opts) => opts.sort((a, b) => a.option_id - b.option_id).map((opt) => opt.vote_count));
+
             // 广播更新后的选项，并加入 pollId
-            io.to(`poll-${pollId}`).emit('updateVotes', { pollId, updatedOptions });
+            io.to(`poll-${pollId}`).emit('updateVotes', { pollId, arrayData });
             console.log(`[vote] 广播更新后的投票选项:`, { pollId, updatedOptions });
         } catch (err) {
             console.error('[vote] 出错:', err);

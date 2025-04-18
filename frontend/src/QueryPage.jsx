@@ -50,7 +50,7 @@ const QueryPage = () => {
     e.preventDefault();
     console.log(responses);
     // Handle submission (e.g., send to server)
-    socket.emit('vote', { pollId: POLL_ID, optionId:responses[0] });
+    socket.emit('vote', { pollId: POLL_ID, answers:responses });
   };
 
   return (
