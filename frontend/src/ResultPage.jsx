@@ -7,12 +7,11 @@ import 'tailwindcss/tailwind.css';
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const colorPalette = [
-  "#FF6B6B",
-  "#4ECDC4",
-  "#45B7D1",
-  "#96CEB4",
-  "#FFEEAD",
-  "#D4A5A5"
+  "#cdb4db",
+  "#ffc8dd",
+  "#faaac7",
+  "#bee2ff",
+  "#a2d2ff",
 ];
 
 // Sample data for questions and results
@@ -35,7 +34,7 @@ const questions = [
   ];
 
 const resultData = [
-  [40, 30, 20, 10],
+  [40, 30, 20, 11],
   [60, 20, 20],
   [50, 30, 15, 5]
 ];
@@ -69,26 +68,27 @@ const ResultPage = () => {
       {
         data: resultData[selectedQuestion],
         backgroundColor: colorPalette,
-        hoverOffset: 4
+        hoverOffset: 4,
+        borderWidth: 1
       },
     ],
   };
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-gradient-to-br from-purple-400 via-pink-300 to-blue-400">
       {/* Navigation Bar */}
-      <div className="w-1/4 bg-white shadow-md">
-        <h2 className="text-xl font-bold p-4 border-b">Questions</h2>
+      <div className="w-1/4 bg-gradient-to-b from-indigo-600 to-purple-500 text-white shadow-xl">
+        <h2 className="text-2xl font-extrabold p-4 border-b border-indigo-400">Questions</h2>
         <ul>
           {questions.map((question, index) => (
             <li
               key={question.id}
-              className={`p-4 cursor-pointer hover:bg-gray-200 ${
-                selectedQuestion === index ? 'bg-gray-200' : ''
+              className={`p-4 cursor-pointer hover:bg-indigo-500 hover:bg-opacity-50 transition duration-200 ${
+                selectedQuestion === index ? 'bg-indigo-500 bg-opacity-50' : ''
               }`}
               onClick={() => handleQuestionClick(index)}
             >
-              {question.text}
+              <span className="text-white font-medium">{question.text}</span>
             </li>
           ))}
         </ul>
@@ -96,9 +96,11 @@ const ResultPage = () => {
 
       {/* Main Content */}
       <div className="flex-1 p-8">
-        <h1 className="text-2xl font-bold mb-6">Survey Results</h1>
-        <div className="max-w-2xl mx-auto bg-white shadow-lg rounded-lg p-6">
-          <h2 className="text-lg font-semibold mb-4">
+        <h1 className="text-3xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-purple-800 to-pink-900">
+          Survey Results
+        </h1>
+        <div className="max-w-2xl mx-auto bg-white/60 shadow-2xl rounded-xl p-6 border border-purple-200">
+          <h2 className="text-xl font-semibold mb-4 text-indigo-700">
             {questions[selectedQuestion].text}
           </h2>
           <Doughnut
@@ -107,8 +109,18 @@ const ResultPage = () => {
               plugins: {
                 legend: {
                   position: 'top',
+                  labels: {
+                    color: '#4B0082',
+                    font: {
+                      size: 14,
+                      weight: 'bold',
+                    },
+                  },
                 },
                 tooltip: {
+                  backgroundColor: 'rgba(124, 58, 237, 0.8)',
+                  titleColor: '#ffffff',
+                  bodyColor: '#ffffff',
                   callbacks: {
                     label: (context) => {
                       const label = context.label || '';
