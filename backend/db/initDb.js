@@ -75,6 +75,19 @@ async function initializeDatabase() {
             );
         `);
         console.log('表创建成功或已存在: poll_options');
+
+        // 创建示例问卷数据，一个问题四个选项
+        await connection.query(`
+            INSERT INTO polls (title, description) VALUES ('你喜欢哪种水果？', '请选择你最喜欢的水果。')
+        `);
+        // 选项
+        await connection.query(`
+            INSERT INTO poll_options (poll_id, option_text) VALUES
+            (1, '苹果'),
+            (1, '香蕉'),
+            (1, '橘子'),
+            (1, '葡萄')
+        `);
     } catch (err) {
         console.error('初始化数据库时出错:', err);
     } finally {
