@@ -54,37 +54,38 @@ const QueryPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-      <div className="bg-white p-8 rounded-lg shadow-lg max-w-2xl w-full">
-        <h1 className="text-2xl font-bold mb-6 text-center">Marketing Survey</h1>
-        <form onSubmit={handleSubmit}>
+    <div className="min-h-screen bg-gradient-to-br from-purple-400 via-pink-300 to-blue-400 flex items-center justify-center p-4">
+      <div className="bg-white p-8 rounded-xl shadow-2xl max-w-2xl w-full border border-purple-200">
+        <h1 className="text-3xl font-extrabold mb-6 text-center text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">
+          Marketing Survey
+        </h1>
+        <div>
           {questions.map(question => (
             <div key={question.id} className="mb-6">
-              <p className="text-lg font-semibold mb-2">{question.text}</p>
-              <div className="space-y-2">
+              <p className="text-lg font-semibold mb-2 text-indigo-700">{question.text}</p>
+              <div className="space-y-3">
                 {question.options.map(option => (
-                  <label key={option} className="flex items-center space-x-2">
+                  <label key={option} className="flex items-center space-x-3">
                     <input
                       type="radio"
                       name={`question-${question.id}`}
                       value={option}
                       checked={responses[question.id] === option}
                       onChange={() => handleOptionChange(question.id, option)}
-                      className="h-4 w-4 text-blue-600"
+                      className="h-5 w-5 text-pink-500 focus:ring-pink-400"
                     />
-                    <span>{option}</span>
+                    <span className="text-gray-800 transition duration-150 hover:text-pink-600 hover:scale-110">{option}</span>
                   </label>
                 ))}
               </div>
             </div>
           ))}
           <button
-            type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+            className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-3 rounded-lg hover:from-purple-600 hover:to-pink-600 transition duration-300 transform hover:scale-105"
           >
-             Submit Survey
+            Submit Survey
           </button>
-        </form>
+        </div>
       </div>
     </div>
   );
