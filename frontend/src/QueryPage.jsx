@@ -1,4 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { io } from 'socket.io-client';
+
+const socket = io('http://localhost:5000'); // 根据你的后端端口修改
+const POLL_ID = 1; // 假设是第一个问卷
+
 
 // Sample JSON data (in a real app, this would be fetched from a file or API)
 const surveyData = {
@@ -11,7 +16,7 @@ const surveyData = {
     {
       id: 2,
       text: "How satisfied are you with our customer service?",
-      options: ["Very Satisfied", "Satisfied", "Neutral", "Dissatisfied"]
+      options: ["Satisfied", "Neutral", "Dissatisfied"]
     },
     {
       id: 3,
@@ -43,8 +48,9 @@ const QueryPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Survey Responses:', responses);
+    console.log(responses);
     // Handle submission (e.g., send to server)
+    socket.emit('vote', { pollId: POLL_ID, optionId:responses[0] });
   };
 
   return (
