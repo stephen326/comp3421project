@@ -1,25 +1,20 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import CreatePoll from './components/CreatePoll'; // 导入创建投票组件
+import Home from './components/Home'; // 导入主页组件
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    return (
+        <Router>
+            {/* 定义路由规则 */}
+            <Routes>
+                {/* 路由：创建投票页面 */}
+                <Route path="/" element={<Home />} />
+                <Route path="/create-poll" element={<CreatePoll />} />
+                {/* 其他路由可以在这里添加 */}
+            </Routes>
+        </Router>
+    );
 }
 
-export default App;
+export default App; // 导出 App 组件，供其他文件使用

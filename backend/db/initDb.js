@@ -32,6 +32,13 @@ async function initializeDatabase() {
         // 切换到目标数据库
         await connection.query(`USE ${process.env.DB_DATABASE}`);
 
+        // 删除表（如果存在）
+        console.log('检查并删除表（如果存在）...');
+        await connection.query(`DROP TABLE IF EXISTS poll_options`);
+        console.log('表 poll_options 已删除（如果存在）');
+        await connection.query(`DROP TABLE IF EXISTS polls`);
+        console.log('表 polls 已删除（如果存在）');
+
         // 创建投票表 (polls)
         await connection.query(`
             CREATE TABLE IF NOT EXISTS polls (

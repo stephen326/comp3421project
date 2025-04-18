@@ -25,6 +25,7 @@ initializeDatabase()
 // 导入路由
 const dbTestRouter = require('./routes/dbTest'); // 数据库测试相关的路由
 const pollsRouter = require('./routes/polls'); // 投票功能相关的路由
+const createpollRouter = require('./routes/createpollapi'); // 创建投票相关的路由
 
 // 使用路由
 // 添加根路径路由
@@ -33,6 +34,7 @@ app.get('/', (req, res) => {
 });
 app.use('/api/db-test', dbTestRouter); // 将数据库测试路由挂载到 /api/db-test 路径
 app.use('/api/polls', pollsRouter); // 将投票功能路由挂载到 /api/polls 路径
+app.use('/api/createpoll', createpollRouter); // 将创建投票路由挂载到 /api/createpoll 路径
 
 // 启动服务器
 app.listen(port, () => {
