@@ -8,6 +8,7 @@ const { initializeDatabase } = require('./db/initDb');
 // ==========================================
 const dbTestRouter = require('./routes/dbTest');
 const pollsRouter = require('./routes/polls');
+const getResultRouter = require('./routes/getResult');
 
 // Create Express app
 // ==========================================
@@ -37,6 +38,8 @@ const createpollRouter = require('./routes/createpollapi'); // 创建投票相�
 app.get('/', (req, res) => {
     res.send('Welcome to the backend server! Use /api/db-test or /api/polls to access the APIs.');
 });
+
+app.use('/api/pollresult', getResultRouter); // 将获取投票结果的路由挂载到 /api/pollresult 路径
 
 // websocket register
 // ==========================================
