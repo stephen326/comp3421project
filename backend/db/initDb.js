@@ -55,7 +55,7 @@ async function initializeDatabase() {
         await connection.query(`
             CREATE TABLE IF NOT EXISTS question (
                 id INT AUTO_INCREMENT PRIMARY KEY,
-                question_id INT NOT NULL UNIQUE,
+                question_id INT NOT NULL,
                 question_text VARCHAR(255) NOT NULL
             );
         `);
@@ -70,8 +70,7 @@ async function initializeDatabase() {
                 option_id INT NOT NULL,
                 option_text VARCHAR(255) NOT NULL,
                 vote_count INT DEFAULT 0,
-                FOREIGN KEY (poll_id) REFERENCES polls(id) ON DELETE CASCADE,
-                FOREIGN KEY (question_id) REFERENCES question(question_id) ON DELETE CASCADE
+                FOREIGN KEY (poll_id) REFERENCES polls(id) ON DELETE CASCADE
             );
         `);
         console.log('表创建成功或已存在: poll_options');

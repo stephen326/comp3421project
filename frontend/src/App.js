@@ -7,6 +7,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import CreateSurvey from './components/CreateSurvey';
 import CreatePoll from './components/CreatePoll'; // 导入创建投票组件
 import Home from './components/Home'; // 导入主页组件
+import Thank from './Thank'; // 导入感谢页面组件
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path="/result-page" element={<ResultPage />} />
         <Route path="/query-page" element={<QueryPage />} />
         <Route path="/create-survey" element={<CreateSurvey />} />
+        <Route path="/thanks" element={<Thank />} />
       </Routes>
     </Router>
   );

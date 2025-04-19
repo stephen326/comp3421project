@@ -49,8 +49,16 @@ const QueryPage = () => {
   };
 
   const handleSubmit = (e) => {
+    // check if all questions are answered
+    const allAnswered = survey.questions.every(question => responses[question.id]);
+    if (!allAnswered) {
+        alert("Please answer all questions before submitting.");
+        return;
+    }
+
     e.preventDefault();
     socket.emit('vote', { pollId: POLL_ID, answers:responses });
+    window.location.href = '/thanks';
   };
 
   return (
