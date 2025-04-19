@@ -14,9 +14,9 @@ module.exports = (io, socket) => {
 
     socket.on('vote', async ({ pollId, answers }) => {
         console.log(`[vote] 用户投票，pollId: ${pollId}, answers: ${JSON.stringify(answers)}`);
-        try {
+      try {
             // 构建批量更新的 SQL 查询
-            const updatePromises = answers.map(({ questionId, optionId }) =>
+          const updatePromises = Object.entries(answers).map(([ questionId, optionId ]) =>
                 pool.query(
                     `UPDATE poll_options SET vote_count = vote_count + 1 WHERE option_id = ? AND question_id = ? AND poll_id = ?`,
                     [optionId, questionId, pollId]
@@ -38,7 +38,7 @@ module.exports = (io, socket) => {
 
             // 广播更新后的选项，并加入 pollId
             io.to(`poll-${pollId}`).emit('updateVotes', { pollId, arrayData });
-            console.log(`[vote] 广播更新后的投票选项:`, { pollId, updatedOptions });
+          console.log(`[vote] 广播更新后的投票选项:`, { pollId, updatedOptions, arrayData });
         } catch (err) {
             console.error('[vote] 出错:', err);
             socket.emit('voteError', { message: '投票失败，请稍后重试。' });

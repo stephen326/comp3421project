@@ -1,7 +1,8 @@
 import React, { useState, useRef, useLayoutEffect, useEffect } from 'react';
-import { Doughnut } from 'react-chartjs-2';
+import { Doughnut, Bar, PolarArea } from 'react-chartjs-2';
 import { io } from 'socket.io-client';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import Chart from 'chart.js/auto';
 import 'tailwindcss/tailwind.css';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -19,7 +20,7 @@ const questions = [
     {
       id: 1,
       text: "How often do you purchase our product?",
-      options: ["Daily", "Weekly", "Monthly", "Rarely", "Rarely", "Rarely", "Rarely", "Rarely", "Rarely", "Rarely", "Rarely", "Rarely"]
+      options: ["Daily", "Weekly", "Monthly"]
     },
     {
       id: 2,
@@ -29,14 +30,14 @@ const questions = [
     {
       id: 3,
       text: "What feature do you value most?",
-      options: ["Quality", "Price", "Brand", "Support"]
+      options: ["Quality", "Price", "Brand"]
     }
   ];
 
 const resultData = [
-  [40, 30, 20, 11, 11, 11, 11, 11, 11, 11, 11, 11],
+  [40, 30, 20],
   [60, 20, 20],
-  [50, 30, 15, 5]
+  [50, 30, 15]
 ];
 
 const socket = io('http://localhost:5000'); // 根据你的后端端口修改
@@ -45,13 +46,15 @@ const POLL_ID = 1; // 假设是第一个问卷
 const ResultPage = () => {
   const [selectedQuestion, setSelectedQuestion] = useState(0);
   const [data, setData] = useState(resultData);
+  const [chartType, setChartType] = useState('Doughnut');
 
   useEffect(() => {
     // TODO: use api to fech the json
 
-    socket.emit('joinPoll', POLL_ID);
+    socket.emit('joinPollRoom', POLL_ID);
     socket.on('updateVotes', (update) => {
-      setData(update);
+      console.log(update);
+      setData(update.arrayData);
     });
 
     return () => socket.off('updateVotes');
@@ -61,17 +64,64 @@ const ResultPage = () => {
     setSelectedQuestion(index);
   };
 
+  const handleChartTypeChange = (event) => {
+    setChartType(event.target.value);
+  };
+
   // 美味的预制data(?)
   const chartData = {
     labels: questions[selectedQuestion].options,
     datasets: [
       {
+        label: 'Votes',
         data: data[selectedQuestion],
         backgroundColor: colorPalette,
         hoverOffset: 4,
         borderWidth: 1
       },
     ],
+  };
+
+  const chartOptions = {
+    plugins: {
+      legend: {
+        position: 'top',
+        labels: {
+          color: '#4B0082',
+          font: {
+            size: 14,
+            weight: 'bold',
+          },
+        },
+      },
+      tooltip: {
+        backgroundColor: 'rgba(124, 58, 237, 0.8)',
+        titleColor: '#ffffff',
+        bodyColor: '#ffffff',
+        callbacks: {
+          label: (context) => {
+            console.log(context);
+            const label = context.label || '';
+            const value =  context.parsed.r || context.parsed.y || context.parsed || 0;
+            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+            const percentage = ((value / total) * 100).toFixed(2);
+            return `${label}: ${value} (${percentage}%)`;
+          },
+        },
+      },
+    },
+  };
+
+  const renderChart = () => {
+    switch (chartType) {
+    case 'Bar':
+      return <Bar data={chartData} options={chartOptions} />;
+    case 'PolarArea':
+      return <PolarArea data={chartData} options={chartOptions} />;
+    case 'Doughnut':
+    default:
+      return <Doughnut data={chartData} options={chartOptions} />;
+    }
   };
 
   return (
@@ -94,50 +144,34 @@ const ResultPage = () => {
         </ul>
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 p-8">
-        <h1 className="text-3xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-purple-800 to-pink-900">
-          Survey Results
-        </h1>
-        <div className="max-w-2xl mx-auto bg-white/60 shadow-2xl rounded-xl p-6 border border-purple-200">
-          <h2 className="text-xl font-semibold mb-4 text-indigo-700">
-            {questions[selectedQuestion].text}
-          </h2>
-          <Doughnut
-            data={chartData}
-            options={{
-              plugins: {
-                legend: {
-                  position: 'top',
-                  labels: {
-                    color: '#4B0082',
-                    font: {
-                      size: 14,
-                      weight: 'bold',
-                    },
-                  },
-                },
-                tooltip: {
-                  backgroundColor: 'rgba(124, 58, 237, 0.8)',
-                  titleColor: '#ffffff',
-                  bodyColor: '#ffffff',
-                  callbacks: {
-                    label: (context) => {
-                      const label = context.label || '';
-                      const value = context.parsed || 0;
-                      const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                      const percentage = ((value / total) * 100).toFixed(2);
-                      return `${label}: ${value} (${percentage}%)`;
-                    },
-                  },
-                },
-              },
-            }}
-          />
-        </div>
-      </div>
+
+    <div className="flex-1 p-8">
+  <h1 className="text-3xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-purple-800 to-pink-900">
+    Survey Results
+  </h1>
+  <div className="max-w-2xl mx-auto bg-white/60 shadow-2xl rounded-xl p-6 border border-purple-200">
+    <div className="flex justify-between items-center mb-4">
+      <h2 className="text-xl font-semibold text-indigo-700">
+        {questions[selectedQuestion].text}
+      </h2>
+      <select
+        value={chartType}
+        onChange={handleChartTypeChange}
+        className="w-40 p-2.5
+        bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-medium
+        rounded-lg border border-indigo-300 shadow-sm cursor-pointer
+        hover:from-indigo-600 hover:to-purple-700 focus:outline-none"
+      >
+        <option value="Doughnut">Doughnut</option>
+        <option value="Bar">Bar</option>
+        <option value="PolarArea">PolarArea</option>
+      </select>
     </div>
-  );
+    {renderChart()}
+  </div>
+    </div>
+    </div>
+);
 };
 
 export default ResultPage;
