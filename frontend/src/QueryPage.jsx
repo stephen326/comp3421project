@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
 import { useParams, useNavigate } from 'react-router-dom'; // 导入 useParams 和 useNavigate
 
-const socket = io('http://localhost:5000'); // 根据你的后端端口修改
+const socket = io('http://34.150.45.164:5000'); // 根据你的后端端口修改
 
 // Sample JSON data (in a real app, this would be fetched from a file or API)
 const surveyData = {
@@ -36,7 +36,7 @@ const QueryPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/pollresult/${pollId}`);
+        const response = await fetch(`http://34.150.45.164:5000/api/pollresult/${pollId}`);
         const data = await response.json();
 
         if (!data.questions) {

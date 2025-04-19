@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 
-const socket = io('http://localhost:5000'); // 根据你的后端端口修改
+const socket = io('http://34.150.45.164:5000'); // 根据你的后端端口修改
 
 const POLL_ID = 1; // 假设是第一个问卷
 const OPTIONS = [

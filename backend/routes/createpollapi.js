@@ -74,8 +74,8 @@ router.post('/', async (req, res) => {
         console.log('Transaction committed successfully!');
 
         // Return poll links
-        const queryLink = `http://localhost:3000/query-page/${pollId}`; // Poll page link
-        const resultLink = `http://localhost:3000/result-page/${pollId}`; // Result page link
+        const queryLink = `http://34.150.45.164:3000/query-page/${pollId}`; // Poll page link
+        const resultLink = `http://34.150.45.164:3000/result-page/${pollId}`; // Result page link
         res.status(201).json({
             message: 'Poll created successfully!',
             queryLink,

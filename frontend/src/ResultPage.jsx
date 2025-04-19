@@ -41,7 +41,7 @@ const resultData = [
   [50, 30, 15]
 ];
 
-const socket = io('http://localhost:5000'); // 根据你的后端端口修改
+const socket = io('http://34.150.45.164:5000'); // 根据你的后端端口修改
 
 const ResultPage = () => {
   const [selectedQuestion, setSelectedQuestion] = useState(0);
@@ -52,7 +52,7 @@ const ResultPage = () => {
   const navigate = useNavigate(); // Initialize navigate
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/pollresult/${POLL_ID}`)
+    fetch(`http://34.150.45.164:5000/api/pollresult/${POLL_ID}`)
       .then((response) => {
         if (!response.ok) {
           throw new Error('Poll not found');

@@ -65,5 +65,5 @@ app.use('/api/createpoll', createpollRouter); // 将创建投票路由挂载到 
 // Start the server
 // ==========================================
 server.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}`);
+    console.log(`Server running on http://34.150.45.164:${port}`);
 });
