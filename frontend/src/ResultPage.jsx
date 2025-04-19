@@ -53,7 +53,12 @@ const ResultPage = () => {
 
   useEffect(() => {
     fetch(`http://localhost:5000/api/pollresult/${POLL_ID}`)
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Poll not found');
+        }
+        return response.json();
+      })
       .then((data) => {
         const updatedData = data.questions.map((question) => {
           return Object.values(question.options).map((option) => option.voteCount);
@@ -65,6 +70,10 @@ const ResultPage = () => {
           options: Object.values(question.options).map((option) => option.optionText)
         }));
         setQuestions(questions);
+      })
+      .catch((error) => {
+        console.error("Error fetching poll data:", error);
+        navigate('/not-found'); // Navigate to NotFoundPage
       });
 
     socket.emit('joinPollRoom', POLL_ID);

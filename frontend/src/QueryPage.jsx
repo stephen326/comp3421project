@@ -6,23 +6,23 @@ const socket = io('http://localhost:5000'); // 根据你的后端端口修改
 
 // Sample JSON data (in a real app, this would be fetched from a file or API)
 const surveyData = {
-  title: "Marketing Survey",
-  description: "Help us shape the future with your feedback in this quick and fun survey!",
+  title: " ",
+  description: " ",
   questions: [
     {
       id: 1,
-      text: "How often do you purchase our product?",
-      options: ["Daily", "Weekly", "Monthly", "Rarely"]
+      text: " ",
+      options: [" "]
     },
     {
       id: 2,
-      text: "How satisfied are you with our customer service?",
-      options: ["Satisfied", "Neutral", "Dissatisfied"]
+      text: " ",
+      options: [" "]
     },
     {
       id: 3,
-      text: "What feature do you value most?",
-      options: ["Quality", "Price", "Brand", "Support"]
+      text: " ",
+      options: [" "]
     }
   ]
 };
@@ -34,21 +34,37 @@ const QueryPage = () => {
   const navigate = useNavigate(); // Initialize navigate
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/pollresult/${pollId}`)
-        .then((response) => response.json())
-        .then((data) => {
-          const questions = data.questions.map((question) => ({
-            id: question.questionId,
-            text: question.questionText,
-            options: Object.values(question.options).map((option) => option.optionText)
-          }));
-          setSurvey({
-            title: data.title,
-            description: data.description,
-            questions: questions
-          });
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`http://localhost:5000/api/pollresult/${pollId}`);
+        const data = await response.json();
+
+        if (!data.questions) {
+          throw new Error("Invalid poll data");
+        }
+
+        const questions = data.questions.map((question) => ({
+          id: question.questionId,
+          text: question.questionText,
+          options: Object.values(question.options).map((option) => option.optionText),
+        }));
+
+        setSurvey({
+          title: data.title,
+          description: data.description,
+          questions: questions,
         });
-  }, []);
+      } catch (error) {
+        console.error("Error fetching poll data:", error);
+        setSurvey(null); // Set survey to null to indicate an error
+        navigate('/not-found'); // Navigate to NotFoundPage
+        alert('Not exist!');
+
+      }
+    };
+
+    fetchData();
+  }, [pollId, navigate]);
 
   const handleOptionChange = (questionId, option) => {
     setResponses(prev => ({

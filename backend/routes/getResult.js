@@ -12,6 +12,7 @@ router.get('/:pollId', async (req, res) => {
         return res.status(400).json({ error: '投票 ID 必须是数字！' });
     }
 
+
     try {
         // 查询投票的标题和描述
         const [pollResult] = await pool.query(
@@ -20,7 +21,7 @@ router.get('/:pollId', async (req, res) => {
         );
 
         if (pollResult.length === 0) {
-            return res.status(404).json({ error: '未找到该投票！' });
+            return res.status(404).json({ error: '未找到该投票！', message: '无效的投票 ID，请检查输入。' });
         }
 
         const poll = pollResult[0];
