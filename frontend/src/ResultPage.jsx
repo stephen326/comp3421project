@@ -16,7 +16,7 @@ const colorPalette = [
 ];
 
 // Sample data for questions and results
-const questions = [
+const questionsData = [
     {
       id: 1,
       text: "How often do you purchase our product?",
@@ -47,9 +47,23 @@ const ResultPage = () => {
   const [selectedQuestion, setSelectedQuestion] = useState(0);
   const [data, setData] = useState(resultData);
   const [chartType, setChartType] = useState('Doughnut');
+  const [questions, setQuestions] = useState(questionsData);
 
   useEffect(() => {
-    // TODO: use api to fech the json
+    fetch('http://localhost:5000/api/pollresult/1')
+      .then((response) => response.json())
+      .then((data) => {
+        const updatedData = data.questions.map((question) => {
+          return Object.values(question.options).map((option) => option.voteCount);
+        });
+        setData(updatedData);
+        const questions = data.questions.map((question) => ({
+          id: question.questionId,
+          text: question.questionText,
+          options: Object.values(question.options).map((option) => option.optionText)
+        }));
+        setQuestions(questions);
+      });
 
     socket.emit('joinPollRoom', POLL_ID);
     socket.on('updateVotes', (update) => {
@@ -100,7 +114,6 @@ const ResultPage = () => {
         bodyColor: '#ffffff',
         callbacks: {
           label: (context) => {
-            console.log(context);
             const label = context.label || '';
             const value =  context.parsed.r || context.parsed.y || context.parsed || 0;
             const total = context.dataset.data.reduce((a, b) => a + b, 0);

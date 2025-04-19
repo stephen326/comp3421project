@@ -34,22 +34,21 @@ const QueryPage = () => {
   const { pollId } = useParams(); // 获取 URL 中的 pollId 参数
 
   useEffect(() => {
-    const fetchSurvey = async () => {
-        try {
-            const response = await fetch(`http://localhost:5000/api/survey/${pollId}`); // 根据 pollId 获取问卷数据
-            if (response.ok) {
-                const data = await response.json();
-                setSurvey(data); // 设置动态加载的问卷数据
-            } else {
-                console.error('Failed to fetch survey data');
-            }
-        } catch (error) {
-            console.error('Error fetching survey data:', error);
-        }
-    };
-
-    fetchSurvey();
-}, [pollId]); // 依赖 pollId
+    fetch('http://localhost:5000/api/pollresult/1')
+        .then((response) => response.json())
+        .then((data) => {
+          const questions = data.questions.map((question) => ({
+            id: question.questionId,
+            text: question.questionText,
+            options: Object.values(question.options).map((option) => option.optionText)
+          }));
+          setSurvey({
+            title: data.title,
+            description: data.description,
+            questions: questions
+          });
+        });
+  }, []);
 
   const handleOptionChange = (questionId, option) => {
     setResponses(prev => ({

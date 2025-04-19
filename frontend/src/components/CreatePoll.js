@@ -97,93 +97,103 @@ const CreatePoll = () => {
     };
 
     return (
-        <div className="create-poll-container">
-            <h1 className="create-poll-title">Create New Poll</h1>
-            <form onSubmit={handleSubmit} className="create-poll-form">
-                <div>
-                    <label>Poll Title:</label>
-                    <input
-                        type="text"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                        placeholder="Enter poll title"
-                    />
-                </div>
-                <div>
-                    <label>Poll Description:</label>
-                    <textarea
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                        placeholder="Enter poll description"
-                    />
-                </div>
-                {questions.map((question, qIndex) => (
-                    <div key={qIndex} className="question-container">
-                        <div>
-                            <label>Question {qIndex + 1}:</label>
-                            <input
-                                type="text"
-                                value={question.title}
-                                onChange={(e) => handleQuestionTitleChange(qIndex, e.target.value)}
-                                placeholder="Enter question title"
-                            />
-                            {questions.length > 1 && (
-                                <button
-                                    type="button"
-                                    onClick={() => removeQuestion(qIndex)}
-                                    className="delete-button"
-                                >
-                                    Remove Question
-                                </button>
-                            )}
-                        </div>
-                        <div>
-                            <label>Options:</label>
-                            {question.options.map((option, oIndex) => (
-                                <div key={oIndex} className="option-container">
-                                    <input
-                                        type="text"
-                                        value={option}
-                                        onChange={(e) => handleOptionChange(qIndex, oIndex, e.target.value)}
-                                        placeholder={`Option ${oIndex + 1}`}
-                                    />
-                                    {question.options.length > 1 && (
-                                        <button
-                                            type="button"
-                                            onClick={() => removeOption(qIndex, oIndex)}
-                                            className="delete-button"
-                                        >
-                                            Remove Option
-                                        </button>
-                                    )}
-                                </div>
-                            ))}
-                            <button
-                                type="button"
-                                onClick={() => addOption(qIndex)}
-                                className="add-option-button"
-                            >
-                                Add Option
-                            </button>
-                        </div>
-                    </div>
-                ))}
-                <div className="button-group">
-                    <button
-                        type="button"
-                        onClick={addQuestion}
-                        className="add-question-button"
-                    >
-                        Add Question
-                    </button>
-                    <button
-                        type="submit"
-                        className="submit-button"
-                    >
-                        Submit
-                    </button>
-                </div>
-            </form>
+          <div className="min-h-screen bg-gradient-to-br from-purple-400 via-pink-300 to-blue-400 flex items-center justify-center p-4">
+            <div className="bg-white/40 p-8 rounded-xl shadow-2xl max-w-3xl w-full border border-purple-200">
+    <h1 className="text-3xl font-extrabold mb-6 text-center text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">
+      Create New Poll
+    </h1>
+    <div className="create-poll-form space-y-6">
+      <div>
+        <label className="block text-lg font-semibold text-indigo-700 mb-2">Poll Title:</label>
+        <input
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="Enter poll title"
+          className="w-full p-3 rounded-lg border border-purple-300 focus:outline-none focus:ring-2 focus:ring-pink-400 bg-purple-50 text-gray-800"
+        />
+      </div>
+      <div>
+        <label className="block text-lg font-semibold text-indigo-700 mb-2">Poll Description:</label>
+        <textarea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Enter poll description"
+          className="w-full p-3 rounded-lg border border-purple-300 focus:outline-none focus:ring-2 focus:ring-pink-400 bg-purple-50 text-gray-800 resize-y"
+          rows="4"
+        />
+      </div>
+      {questions.map((question, qIndex) => (
+        <div key={qIndex} className="question-container bg-purple-50/90 p-6 rounded-lg shadow-md border border-purple-200">
+          <div className="flex items-center justify-between mb-4">
+            <label className="text-lg font-semibold text-indigo-700">Question {qIndex + 1}:</label>
+            {questions.length > 1 && (
+              <button
+                type="button"
+                onClick={() => removeQuestion(qIndex)}
+                className="bg-pink-600 text-white py-1 px-3 rounded-lg hover:bg-red-600 transition duration-300 transform hover:scale-105"
+              >
+                Remove Question
+              </button>
+            )}
+          </div>
+          <input
+            type="text"
+            value={question.title}
+            onChange={(e) => handleQuestionTitleChange(qIndex, e.target.value)}
+            placeholder="Enter question title"
+            className="w-full p-3 rounded-lg border border-purple-300 focus:outline-none focus:ring-2 focus:ring-pink-400 bg-white text-gray-800 mb-4"
+          />
+          <div>
+            <label className="block text-lg font-semibold text-indigo-700 mb-2">Options:</label>
+            {question.options.map((option, oIndex) => (
+              <div key={oIndex} className="option-container flex items-center space-x-3 mb-3">
+                <input
+                  type="text"
+                  value={option}
+                  onChange={(e) => handleOptionChange(qIndex, oIndex, e.target.value)}
+                  placeholder={`Option ${oIndex + 1}`}
+                  className="flex-1 p-3 rounded-lg border border-purple-300 focus:outline-none focus:ring-2 focus:ring-pink-400 bg-white text-gray-800"
+                />
+                {question.options.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => removeOption(qIndex, oIndex)}
+                    className="bg-pink-600 text-white py-1 px-3 rounded-lg hover:bg-red-600 transition duration-300 transform hover:scale-105"
+                  >
+                    Remove
+                  </button>
+                )}
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() => addOption(qIndex)}
+              className="bg-gradient-to-r from-purple-500 to-pink-500 text-white py-2 px-4 rounded-lg hover:from-purple-600 hover:to-pink-600 transition duration-300 transform hover:scale-105 mt-2"
+            >
+              Add Option
+            </button>
+          </div>
+        </div>
+      ))}
+      <div className="button-group flex space-x-4 justify-center">
+        <button
+          type="button"
+          onClick={addQuestion}
+          className="bg-gradient-to-r from-purple-500 to-pink-500 text-white py-3 px-6 rounded-lg hover:from-purple-600 hover:to-pink-600 transition duration-300 transform hover:scale-105"
+        >
+          Add Question
+        </button>
+        <button
+          type="button"
+          onClick={handleSubmit}
+          className="bg-gradient-to-r from-blue-500 to-purple-700 text-white py-3 px-6 rounded-lg hover:from-blue-600 hover:to-purple-800 transition duration-300 transform hover:scale-105"
+        >
+          Submit
+        </button>
+      </div>
+    </div>
+  </div>
             {message && <p className="create-poll-message">{message}</p>}
             {queryLink && resultLink && (
                 <div className="create-poll-links">
