@@ -202,7 +202,7 @@ const CreatePoll = () => {
                     </p>
                     <button
                         className="result-button"
-                        onClick={() => navigate(resultLink)}
+                        onClick={() => (window.location.href = resultLink)}
                     >
                         查看结果
                     </button>
