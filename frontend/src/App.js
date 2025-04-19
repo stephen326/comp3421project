@@ -16,7 +16,7 @@ function App() {
         <Route path="/create-poll" element={<CreatePoll />} />
         <Route path="/query-page/:pollId" element={<QueryPage />} /> {/* 动态路由 */}
         <Route path="/result-page/:pollId" element={<ResultPage />} /> {/* 动态路由 */}
-        <Route path="/thanks" element={<Thank />} />
+        <Route path="/thank/:pollId" element={<Thank />} />
       </Routes>
     </Router>
   );

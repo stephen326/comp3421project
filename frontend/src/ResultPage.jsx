@@ -4,7 +4,7 @@ import { io } from 'socket.io-client';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import Chart from 'chart.js/auto';
 import 'tailwindcss/tailwind.css';
-import { useParams } from "react-router";
+import { useParams, useNavigate } from "react-router"; // Added useNavigate
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -41,7 +41,7 @@ const resultData = [
   [50, 30, 15]
 ];
 
-const socket = io('http://34.92.76.169:5000'); // 根据你的后端端口修改
+const socket = io('http://localhost:5000'); // 根据你的后端端口修改
 
 const ResultPage = () => {
   const [selectedQuestion, setSelectedQuestion] = useState(0);
@@ -49,9 +49,10 @@ const ResultPage = () => {
   const [chartType, setChartType] = useState('Doughnut');
   const [questions, setQuestions] = useState(questionsData);
   const POLL_ID = useParams().pollId;
+  const navigate = useNavigate(); // Initialize navigate
 
   useEffect(() => {
-    fetch(`http://34.92.76.169:5000/api/pollresult/${POLL_ID}`)
+    fetch(`http://localhost:5000/api/pollresult/${POLL_ID}`)
       .then((response) => response.json())
       .then((data) => {
         const updatedData = data.questions.map((question) => {
@@ -82,6 +83,8 @@ const ResultPage = () => {
   const handleChartTypeChange = (event) => {
     setChartType(event.target.value);
   };
+
+ 
 
   // 美味的预制data(?)
   const chartData = {
@@ -139,7 +142,15 @@ const ResultPage = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gradient-to-br from-purple-400 via-pink-300 to-blue-400">
+    <div className="flex h-screen bg-gradient-to-br from-purple-400 via-pink-300 to-blue-400 relative">
+      {/* Back to Home Button */}
+      <button
+        onClick={() => navigate('/')}
+        className="absolute top-4 right-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-2 px-4 rounded-lg shadow-md hover:from-purple-700 hover:to-indigo-700 transition duration-300 transform hover:scale-105 m-2"
+      >
+        Back to Home
+      </button>
+
       {/* Navigation Bar */}
       <div className="w-1/4 bg-gradient-to-b from-indigo-600 to-purple-500 text-white shadow-xl">
         <h2 className="text-2xl font-extrabold p-4 border-b border-indigo-400">Questions</h2>
@@ -158,34 +169,33 @@ const ResultPage = () => {
         </ul>
       </div>
 
-
-    <div className="flex-1 p-8">
-  <h1 className="text-3xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-purple-800 to-pink-900">
-    Survey Results
-  </h1>
-  <div className="max-w-2xl mx-auto bg-white/60 shadow-2xl rounded-xl p-6 border border-purple-200">
-    <div className="flex justify-between items-center mb-4">
-      <h2 className="text-xl font-semibold text-indigo-700">
-        {questions[selectedQuestion].text}
-      </h2>
-      <select
-        value={chartType}
-        onChange={handleChartTypeChange}
-        className="w-40 p-2.5
-        bg-gradient-to-r from-indigo-200 to-purple-300 text-black font-medium
-        rounded-lg border border-indigo-300 shadow-sm cursor-pointer
-        hover:from-indigo-300 hover:to-purple-400 focus:outline-none"
-      >
-      <option value="Doughnut">Doughnut</option>
-        <option value="Bar">Bar</option>
-        <option value="PolarArea">PolarArea</option>
-      </select>
+      <div className="flex-1 p-8">
+        <h1 className="text-3xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-purple-800 to-pink-900">
+          Survey Results
+        </h1>
+        <div className="max-w-2xl mx-auto bg-white/60 shadow-2xl rounded-xl p-6 border border-purple-200">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold text-indigo-700">
+              {questions[selectedQuestion].text}
+            </h2>
+            <select
+              value={chartType}
+              onChange={handleChartTypeChange}
+              className="w-40 p-2.5
+              bg-gradient-to-r from-indigo-200 to-purple-300 text-black font-medium
+              rounded-lg border border-indigo-300 shadow-sm cursor-pointer
+              hover:from-indigo-300 hover:to-purple-400 focus:outline-none"
+            >
+              <option value="Doughnut">Doughnut</option>
+              <option value="Bar">Bar</option>
+              <option value="PolarArea">PolarArea</option>
+            </select>
+          </div>
+          {renderChart()}
+        </div>
+      </div>
     </div>
-    {renderChart()}
-  </div>
-    </div>
-    </div>
-);
+  );
 };
 
 export default ResultPage;

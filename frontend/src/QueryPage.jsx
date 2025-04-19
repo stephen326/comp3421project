@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
-import { useParams } from 'react-router-dom'; // 导入 useParams
+import { useParams, useNavigate } from 'react-router-dom'; // 导入 useParams 和 useNavigate
 
-const socket = io('http://34.92.76.169:5000'); // 根据你的后端端口修改
-
+const socket = io('http://localhost:5000'); // 根据你的后端端口修改
 
 // Sample JSON data (in a real app, this would be fetched from a file or API)
 const surveyData = {
@@ -32,9 +31,10 @@ const QueryPage = () => {
   const [survey, setSurvey] = useState(surveyData);
   const [responses, setResponses] = useState({});
   const { pollId } = useParams(); // 获取 URL 中的 pollId 参数
+  const navigate = useNavigate(); // Initialize navigate
 
   useEffect(() => {
-    fetch(`http://34.92.76.169:5000/api/pollresult/${pollId}`)
+    fetch(`http://localhost:5000/api/pollresult/${pollId}`)
         .then((response) => response.json())
         .then((data) => {
           const questions = data.questions.map((question) => ({
@@ -68,13 +68,12 @@ const QueryPage = () => {
     }
 
     socket.emit('vote', { pollId, answers: responses }); // 使用动态 pollId
-    window.location.href = '/thanks';
-};
+    navigate(`/thank/${pollId}`); // Navigate to Thank.jsx with pollId
+  };
 
-    if (!survey) {
-      return <div>Loading...</div>; // 加载中的占位符
+  if (!survey) {
+    return <div>Loading...</div>; // 加载中的占位符
   }
-
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-400 via-pink-300 to-blue-400 flex items-center justify-center p-4">
