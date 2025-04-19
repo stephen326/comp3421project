@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
-import '../styles/createpoll.css'; // Import the style file
+import { useNavigate } from 'react-router-dom'; // 导入 useNavigate
+import '../styles/createpoll.css'; // 引入样式文件 
 
 // Create Poll Component
 const CreatePoll = () => {
-    // State: manage the poll title, description, questions, and options
-    const [title, setTitle] = useState(''); // Poll title
-    const [description, setDescription] = useState(''); // Poll description
-    const [questions, setQuestions] = useState([{ title: '', options: [''] }]); // Initial state: one question, one option
-    const [message, setMessage] = useState(''); // Message for feedback
+    const [title, setTitle] = useState(''); // 投票标题
+    const [description, setDescription] = useState(''); // 投票描述
+    const [questions, setQuestions] = useState([{ title: '', options: [''] }]); // 初始状态：一个题目，一个选项
+    const [message, setMessage] = useState(''); // 提示信息
+    const [queryLink, setQueryLink] = useState(''); // 填表链接
+    const [resultLink, setResultLink] = useState(''); // 结果链接
+    const navigate = useNavigate(); // 初始化 navigate
 
     // Update question title
     const handleQuestionTitleChange = (index, value) => {
@@ -75,15 +78,15 @@ const CreatePoll = () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ title, description, questions }),
             });
-            // Log the request body for review
-            console.log('Request body:', { title, description, questions });
-            console.log('Response:', response);
 
             if (response.ok) {
-                setMessage('Poll created successfully!');
-                setTitle(''); // Reset title
-                setDescription(''); // Reset description
-                setQuestions([{ title: '', options: [''] }]); // Reset questions and options
+                const responseData = await response.json();
+                setMessage('投票创建成功！');
+                setQueryLink(responseData.queryLink); // 设置填表链接
+                setResultLink(responseData.resultLink); // 设置结果链接
+                setTitle(''); // 重置标题
+                setDescription(''); // 重置描述
+                setQuestions([{ title: '', options: [''] }]); // 重置题目和选项
             } else {
                 const errorData = await response.json();
                 setMessage(`Creation failed: ${errorData.error}`);
@@ -182,6 +185,19 @@ const CreatePoll = () => {
                 </div>
             </form>
             {message && <p className="create-poll-message">{message}</p>}
+            {queryLink && resultLink && (
+                <div className="create-poll-links">
+                    <p>
+                        你可以在这个链接填写表单：<a href={queryLink} target="_blank" rel="noopener noreferrer">{queryLink}</a>
+                    </p>
+                    <button
+                        className="result-button"
+                        onClick={() => navigate(resultLink)}
+                    >
+                        查看结果
+                    </button>
+                </div>
+            )}
         </div>
     );
 };

@@ -47,27 +47,24 @@ router.post('/', async (req, res) => {
         // 插入每个问题到 question 表，并插入选项到 poll_options 表
         for (const question of questions) {
             const { title: questionTitle, options } = question;
-
-            // 生成 question_id
-            const questionId = globalQuestionId++;
-            console.log(`正在插入问题: ${questionTitle}，生成的 question_id: ${questionId}`);
-
+        
             // 插入问题到 question 表
-            await connection.query(
+            const [questionResult] = await connection.query(
                 'INSERT INTO question (question_text) VALUES (?)',
                 [questionTitle]
             );
-          const [questionResult] = await connection.query(
-            'SELECT LAST_INSERT_ID() AS id'
-          );
-
+        
+            // 获取插入的 question 的主键 ID
+            const q_id = questionResult.insertId; // 获取自增主键 ID
+            console.log(`正在插入问题: ${questionTitle}，生成的 q_id: ${q_id}`);
+        
             // 插入选项到 poll_options 表
             let optionId = 1; // 每个问题的选项从 1 开始
             for (const optionText of options) {
-                console.log(`插入选项: ${optionText}，关联的 question_id: ${questionId}, option_id: ${optionId}`);
+                console.log(`插入选项: ${optionText}，关联的 q_id: ${q_id}, optionId: ${optionId}`);
                 await connection.query(
-                  'INSERT INTO poll_options (poll_id, q_id, question_id, option_id, option_text) VALUES (?, ?, ?, ?, ?)',
-                  [pollId, questionResult.id, questionId, optionId++, optionText]
+                    'INSERT INTO poll_options (poll_id, q_id, question_id, option_id, option_text) VALUES (?, ?, ?, ?, ?)',
+                    [pollId, q_id, q_id, optionId++, optionText] // 假设 question_id 和 q_id 相同
                 );
             }
         }
@@ -76,7 +73,14 @@ router.post('/', async (req, res) => {
         await connection.commit();
         console.log('事务提交成功！');
 
-        res.status(201).json({ message: '投票创建成功！' });
+        // 返回投票链接
+        const queryLink = `http://localhost:3000/query-page/${pollId}`; // 填表页面链接
+        const resultLink = `http://localhost:3000/result-page/${pollId}`; // 结果页面链接
+        res.status(201).json({ 
+            message: '投票创建成功！', 
+            queryLink, 
+            resultLink 
+        });
     } catch (error) {
         console.error('插入数据时出错:', error);
 
