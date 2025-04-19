@@ -4,6 +4,7 @@ import { io } from 'socket.io-client';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import Chart from 'chart.js/auto';
 import 'tailwindcss/tailwind.css';
+import { useParams } from "react-router";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -41,16 +42,16 @@ const resultData = [
 ];
 
 const socket = io('http://localhost:5000'); // 根据你的后端端口修改
-const POLL_ID = 1; // 假设是第一个问卷
 
 const ResultPage = () => {
   const [selectedQuestion, setSelectedQuestion] = useState(0);
   const [data, setData] = useState(resultData);
   const [chartType, setChartType] = useState('Doughnut');
   const [questions, setQuestions] = useState(questionsData);
+  const POLL_ID = useParams().pollId;
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/pollresult/1')
+    fetch(`http://localhost:5000/api/pollresult/${POLL_ID}`)
       .then((response) => response.json())
       .then((data) => {
         const updatedData = data.questions.map((question) => {
@@ -171,11 +172,11 @@ const ResultPage = () => {
         value={chartType}
         onChange={handleChartTypeChange}
         className="w-40 p-2.5
-        bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-medium
+        bg-gradient-to-r from-indigo-200 to-purple-300 text-black font-medium
         rounded-lg border border-indigo-300 shadow-sm cursor-pointer
-        hover:from-indigo-600 hover:to-purple-700 focus:outline-none"
+        hover:from-indigo-300 hover:to-purple-400 focus:outline-none"
       >
-        <option value="Doughnut">Doughnut</option>
+      <option value="Doughnut">Doughnut</option>
         <option value="Bar">Bar</option>
         <option value="PolarArea">PolarArea</option>
       </select>
