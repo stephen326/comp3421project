@@ -34,7 +34,7 @@ const QueryPage = () => {
   const { pollId } = useParams(); // 获取 URL 中的 pollId 参数
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/pollresult/${pollId}`)
+    fetch(`${process.env.REACT_APP_API_BASE}/api/pollresult/${POLL_ID}`)
         .then((response) => response.json())
         .then((data) => {
           const questions = data.questions.map((question) => ({

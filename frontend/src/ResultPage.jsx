@@ -51,7 +51,7 @@ const ResultPage = () => {
   const POLL_ID = useParams().pollId;
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/pollresult/${POLL_ID}`)
+    fetch(`${process.env.REACT_APP_API_BASE}/api/pollresult/${POLL_ID}`)
       .then((response) => response.json())
       .then((data) => {
         const updatedData = data.questions.map((question) => {
