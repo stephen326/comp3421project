@@ -54,17 +54,20 @@ router.post('/', async (req, res) => {
 
             // 插入问题到 question 表
             await connection.query(
-                'INSERT INTO question (question_id, question_text) VALUES (?, ?)',
-                [questionId, questionTitle]
+                'INSERT INTO question (question_text) VALUES (?)',
+                [questionTitle]
             );
+          const [questionResult] = await connection.query(
+            'SELECT LAST_INSERT_ID() AS id'
+          );
 
             // 插入选项到 poll_options 表
             let optionId = 1; // 每个问题的选项从 1 开始
             for (const optionText of options) {
                 console.log(`插入选项: ${optionText}，关联的 question_id: ${questionId}, option_id: ${optionId}`);
                 await connection.query(
-                    'INSERT INTO poll_options (poll_id, question_id, option_id, option_text) VALUES (?, ?, ?, ?)',
-                    [pollId, questionId, optionId++, optionText]
+                  'INSERT INTO poll_options (poll_id, q_id, question_id, option_id, option_text) VALUES (?, ?, ?, ?, ?)',
+                  [pollId, questionResult.id, questionId, optionId++, optionText]
                 );
             }
         }

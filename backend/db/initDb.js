@@ -55,7 +55,6 @@ async function initializeDatabase() {
         await connection.query(`
             CREATE TABLE IF NOT EXISTS question (
                 id INT AUTO_INCREMENT PRIMARY KEY,
-                question_id INT NOT NULL,
                 question_text VARCHAR(255) NOT NULL
             );
         `);
@@ -66,11 +65,13 @@ async function initializeDatabase() {
             CREATE TABLE IF NOT EXISTS poll_options (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 poll_id INT,
-                question_id INT NOT NULL,
+        q_id INT NOT NULL,
+        question_id INT NOT NULL,
                 option_id INT NOT NULL,
                 option_text VARCHAR(255) NOT NULL,
                 vote_count INT DEFAULT 0,
-                FOREIGN KEY (poll_id) REFERENCES polls(id) ON DELETE CASCADE
+                FOREIGN KEY (poll_id) REFERENCES polls(id) ON DELETE CASCADE,
+                FOREIGN KEY (q_id) REFERENCES question(id) ON DELETE CASCADE
             );
         `);
         console.log('表创建成功或已存在: poll_options');
@@ -83,43 +84,43 @@ async function initializeDatabase() {
 ('City Preferences Poll', 'A poll to gauge preferences for city living.');
         `);
       await connection.query(`
-      INSERT INTO question (question_id, question_text) VALUES
-(1, 'Which outdoor activity do you enjoy most?'),
-(2, 'Which indoor activity do you prefer?'),
-(3, 'How often do you engage in hobbies?'),
-(4, 'Which city feature is most important to you?'),
-(5, 'What type of city vibe do you prefer?'),
-(6, 'How long would you like to stay in a city?');
+      INSERT INTO question (question_text) VALUES
+('Which outdoor activity do you enjoy most?'),
+('Which indoor activity do you prefer?'),
+('How often do you engage in hobbies?'),
+('Which city feature is most important to you?'),
+('What type of city vibe do you prefer?'),
+('How long would you like to stay in a city?');
 `);
       // 选项
       await connection.query(`
-INSERT INTO poll_options (poll_id, question_id, option_id, option_text, vote_count) VALUES
+      INSERT INTO poll_options (poll_id, q_id, question_id, option_id, option_text, vote_count) VALUES
 -- Poll 1: Favorite Hobbies Survey
--- Question 1: Which outdoor activity do you enjoy most?
-(1, 1, 1, 'Hiking', 10),
-(1, 1, 2, 'Cycling', 5),
-(1, 1, 3, 'Swimming', 8),
+      -- Question 1: Which outdoor activity do you enjoy most?
+      (1, 1, 1, 1, 'Hiking', 10),
+      (1, 1, 1, 2, 'Cycling', 5),
+      (1, 1, 1, 3, 'Swimming', 8),
 -- Question 2: Which indoor activity do you prefer?
-(1, 2, 1, 'Reading', 12),
-(1, 2, 2, 'Gaming', 15),
-(1, 2, 3, 'Cooking', 7),
+      (1, 2, 2, 1, 'Reading', 12),
+      (1, 2, 2, 2, 'Gaming', 15),
+      (1, 2, 2, 3, 'Cooking', 7),
 -- Question 3: How often do you engage in hobbies?
-(1, 3, 1, 'Daily', 20),
-(1, 3, 2, 'Weekly', 10),
-(1, 3, 3, 'Monthly', 5),
+      (1, 3, 3, 1, 'Daily', 20),
+      (1, 3, 3, 2, 'Weekly', 10),
+      (1, 3, 3, 3, 'Monthly', 5),
 -- Poll 2: City Preferences Poll
 -- Question 4: Which city feature is most important to you?
-(2, 4, 1, 'Public Transport', 18),
-(2, 4, 2, 'Green Spaces', 12),
-(2, 4, 3, 'Cultural Events', 9),
+      (2, 4, 1, 1, 'Public Transport', 18),
+      (2, 4, 1, 2, 'Green Spaces', 12),
+      (2, 4, 1, 3, 'Cultural Events', 9),
 -- Question 5: What type of city vibe do you prefer?
-(2, 5, 1, 'Vibrant and Busy', 15),
-(2, 5, 2, 'Calm and Relaxed', 10),
-(2, 5, 3, 'Artsy and Creative', 8),
+      (2, 5, 2, 1, 'Vibrant and Busy', 15),
+      (2, 5, 2, 2, 'Calm and Relaxed', 10),
+      (2, 5, 2, 3, 'Artsy and Creative', 8),
 -- Question 6: How long would you like to stay in a city?
-(2, 6, 1, 'A few months', 7),
-(2, 6, 2, '1-2 years', 14),
-(2, 6, 3, 'Permanently', 11);
+      (2, 6, 3, 1, 'A few months', 7),
+      (2, 6, 3, 2, '1-2 years', 14),
+      (2, 6, 3, 3, 'Permanently', 11);
         `);
     } catch (err) {
       console.error('初始化数据库时出错:', err);
