@@ -34,11 +34,20 @@ const QueryPage = () => {
 
   // Simulate fetching JSON data
   useEffect(() => {
-    // In a real app, replace this with an actual fetch call
-    // fetch('/path/to/survey.json')
-    //   .then(response => response.json())
-    //   .then(data => setQuestions(data.questions));
-    // setSurvey(surveyData);
+    fetch('http://localhost:5000/api/pollresult/1')
+        .then((response) => response.json())
+        .then((data) => {
+          const questions = data.questions.map((question) => ({
+            id: question.questionId,
+            text: question.questionText,
+            options: Object.values(question.options).map((option) => option.optionText)
+          }));
+          setSurvey({
+            title: data.title,
+            description: data.description,
+            questions: questions
+          });
+        });
   }, []);
 
   const handleOptionChange = (questionId, option) => {
