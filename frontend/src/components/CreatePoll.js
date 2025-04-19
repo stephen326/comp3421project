@@ -192,22 +192,22 @@ const CreatePoll = () => {
           Submit
         </button>
       </div>
+      {message && <p className="create-poll-message text-center text-lg font-semibold text-green-700 mt-4">{message}</p>}
+      {queryLink && resultLink && (
+        <div className="create-poll-links mt-6 bg-purple-50 p-4 rounded-lg shadow-md border border-purple-300">
+          <p className="text-center text-indigo-700 font-medium">
+            You can fill out the form at this link: <a href={queryLink} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">{queryLink}</a>
+          </p>
+          <button
+            className="result-button bg-gradient-to-r from-purple-600 to-indigo-700 text-white py-3 px-6 rounded-lg shadow-md mt-4 hover:from-purple-700 hover:to-indigo-800 transition duration-200"
+            onClick={() => (window.location.href = resultLink)}
+          >
+            View Results
+          </button>
+        </div>
+      )}
     </div>
-  </div>
-            {message && <p className="create-poll-message">{message}</p>}
-            {queryLink && resultLink && (
-                <div className="create-poll-links">
-                    <p>
-                    You can fill out the form at this link: <a href={queryLink} target="_blank" rel="noopener noreferrer">{queryLink}</a>
-                    </p>
-                    <button
-                        className="result-button"
-                        onClick={() => (window.location.href = resultLink)}
-                    >
-                        View Results
-                    </button>
-                </div>
-            )}
+  </div >
         </div>
     );
 };
