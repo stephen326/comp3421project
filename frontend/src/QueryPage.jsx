@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
 import { useParams } from 'react-router-dom'; // 导入 useParams
 
-const socket = io('http://localhost:5000'); // 根据你的后端端口修改
+const socket = io("https://comp3421project-production-cd13.up.railway.app");// 根据你的后端端口修改
 
 
 // Sample JSON data (in a real app, this would be fetched from a file or API)

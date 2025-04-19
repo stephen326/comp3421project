@@ -41,7 +41,7 @@ const resultData = [
   [50, 30, 15]
 ];
 
-const socket = io('http://localhost:5000'); // 根据你的后端端口修改
+const socket = io("https://comp3421project-production-cd13.up.railway.app");// 根据你的后端端口修改
 
 const ResultPage = () => {
   const [selectedQuestion, setSelectedQuestion] = useState(0);
