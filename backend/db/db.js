@@ -1,15 +1,14 @@
 const mysql = require('mysql2');
 
-// 直接使用 Railway 注入的环境变量（无需 dotenv）
-const connection = mysql.createConnection(process.env.DATABASE_URL);
+const pool = mysql.createPool(process.env.DATABASE_URL);
 
-// 测试数据库连接（建议保留）
-connection.connect((err) => {
+pool.getConnection((err, conn) => {
   if (err) {
-    console.error('❌ MySQL connection failed:', err.stack);
+    console.error('❌ Failed to get connection from pool:', err);
     return;
   }
-  console.log('✅ Connected to MySQL');
+  console.log('✅ Got connection from pool!');
+  conn.release(); // 用完记得放回连接池
 });
 
-module.exports = connection;
+module.exports = pool;
