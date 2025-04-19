@@ -41,7 +41,7 @@ const resultData = [
   [50, 30, 15]
 ];
 
-const socket = io('http://localhost:5000'); // 根据你的后端端口修改
+const socket = io('http://34.92.76.169:5000'); // 根据你的后端端口修改
 
 const ResultPage = () => {
   const [selectedQuestion, setSelectedQuestion] = useState(0);
@@ -51,7 +51,7 @@ const ResultPage = () => {
   const POLL_ID = useParams().pollId;
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/pollresult/${POLL_ID}`)
+    fetch(`http://34.92.76.169:5000/api/pollresult/${POLL_ID}`)
       .then((response) => response.json())
       .then((data) => {
         const updatedData = data.questions.map((question) => {

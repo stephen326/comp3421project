@@ -47,17 +47,17 @@ router.post('/', async (req, res) => {
         // Insert each question into the question table and options into the poll_options table
         for (const question of questions) {
             const { title: questionTitle, options } = question;
-        
+
             // Insert question into the question table
             const [questionResult] = await connection.query(
                 'INSERT INTO question (question_text) VALUES (?)',
                 [questionTitle]
             );
-        
+
             // Get the primary key ID of the inserted question
             const q_id = questionResult.insertId; // Get auto-increment primary key ID
             console.log(`Inserting question: ${questionTitle}, generated q_id: ${q_id}`);
-        
+
             // Insert options into the poll_options table
             let optionId = 1; // Options for each question start from 1
             for (const optionText of options) {
@@ -74,12 +74,12 @@ router.post('/', async (req, res) => {
         console.log('Transaction committed successfully!');
 
         // Return poll links
-        const queryLink = `http://localhost:3000/query-page/${pollId}`; // Poll page link
-        const resultLink = `http://localhost:3000/result-page/${pollId}`; // Result page link
-        res.status(201).json({ 
-            message: 'Poll created successfully!', 
-            queryLink, 
-            resultLink 
+        const queryLink = `http://34.92.76.169:3000/query-page/${pollId}`; // Poll page link
+        const resultLink = `http://34.92.76.169:3000/result-page/${pollId}`; // Result page link
+        res.status(201).json({
+            message: 'Poll created successfully!',
+            queryLink,
+            resultLink
         });
     } catch (error) {
         console.error('Error inserting data:', error);

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
 import { useParams } from 'react-router-dom'; // 导入 useParams
 
-const socket = io('http://localhost:5000'); // 根据你的后端端口修改
+const socket = io('http://34.92.76.169:5000'); // 根据你的后端端口修改
 
 
 // Sample JSON data (in a real app, this would be fetched from a file or API)
@@ -34,7 +34,7 @@ const QueryPage = () => {
   const { pollId } = useParams(); // 获取 URL 中的 pollId 参数
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/pollresult/${pollId}`)
+    fetch(`http://34.92.76.169:5000/api/pollresult/${pollId}`)
         .then((response) => response.json())
         .then((data) => {
           const questions = data.questions.map((question) => ({
