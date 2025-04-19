@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
+import { useParams } from 'react-router-dom'; // 导入 useParams
 
 const socket = io('http://localhost:5000'); // 根据你的后端端口修改
-const POLL_ID = 1; // 假设是第一个问卷
 
 
 // Sample JSON data (in a real app, this would be fetched from a file or API)
@@ -31,15 +31,25 @@ const surveyData = {
 const QueryPage = () => {
   const [survey, setSurvey] = useState(surveyData);
   const [responses, setResponses] = useState({});
+  const { pollId } = useParams(); // 获取 URL 中的 pollId 参数
 
-  // Simulate fetching JSON data
   useEffect(() => {
-    // In a real app, replace this with an actual fetch call
-    // fetch('/path/to/survey.json')
-    //   .then(response => response.json())
-    //   .then(data => setQuestions(data.questions));
-    // setSurvey(surveyData);
-  }, []);
+    const fetchSurvey = async () => {
+        try {
+            const response = await fetch(`http://localhost:5000/api/survey/${pollId}`); // 根据 pollId 获取问卷数据
+            if (response.ok) {
+                const data = await response.json();
+                setSurvey(data); // 设置动态加载的问卷数据
+            } else {
+                console.error('Failed to fetch survey data');
+            }
+        } catch (error) {
+            console.error('Error fetching survey data:', error);
+        }
+    };
+
+    fetchSurvey();
+}, [pollId]); // 依赖 pollId
 
   const handleOptionChange = (questionId, option) => {
     setResponses(prev => ({
@@ -49,17 +59,23 @@ const QueryPage = () => {
   };
 
   const handleSubmit = (e) => {
-    // check if all questions are answered
+    e.preventDefault();
+
+    // 检查是否回答了所有问题
     const allAnswered = survey.questions.every(question => responses[question.id]);
     if (!allAnswered) {
         alert("Please answer all questions before submitting.");
         return;
     }
 
-    e.preventDefault();
-    socket.emit('vote', { pollId: POLL_ID, answers:responses });
+    socket.emit('vote', { pollId, answers: responses }); // 使用动态 pollId
     window.location.href = '/thanks';
-  };
+};
+
+    if (!survey) {
+      return <div>Loading...</div>; // 加载中的占位符
+  }
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-400 via-pink-300 to-blue-400 flex items-center justify-center p-4">
