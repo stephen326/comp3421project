@@ -1,71 +1,71 @@
 import React, { useState } from 'react';
-import '../styles/createpoll.css'; // 引入样式文件 
+import '../styles/createpoll.css'; // Import the style file
 
-// 创建投票组件
+// Create Poll Component
 const CreatePoll = () => {
-    // 状态：管理投票的标题、描述、题目和选项
-    const [title, setTitle] = useState(''); // 投票标题
-    const [description, setDescription] = useState(''); // 投票描述
-    const [questions, setQuestions] = useState([{ title: '', options: [''] }]); // 初始状态：一个题目，一个选项
-    const [message, setMessage] = useState(''); // 提示信息
+    // State: manage the poll title, description, questions, and options
+    const [title, setTitle] = useState(''); // Poll title
+    const [description, setDescription] = useState(''); // Poll description
+    const [questions, setQuestions] = useState([{ title: '', options: [''] }]); // Initial state: one question, one option
+    const [message, setMessage] = useState(''); // Message for feedback
 
-    // 更新题目标题
+    // Update question title
     const handleQuestionTitleChange = (index, value) => {
         const updatedQuestions = [...questions];
         updatedQuestions[index].title = value;
         setQuestions(updatedQuestions);
     };
 
-    // 更新选项内容
+    // Update option content
     const handleOptionChange = (qIndex, oIndex, value) => {
         const updatedQuestions = [...questions];
         updatedQuestions[qIndex].options[oIndex] = value;
         setQuestions(updatedQuestions);
     };
 
-    // 添加选项
+    // Add a new option
     const addOption = (qIndex) => {
         const updatedQuestions = [...questions];
-        updatedQuestions[qIndex].options.push(''); // 添加一个空选项
+        updatedQuestions[qIndex].options.push(''); // Add an empty option
         setQuestions(updatedQuestions);
     };
 
-    // 删除选项
+    // Remove an option
     const removeOption = (qIndex, oIndex) => {
         const updatedQuestions = [...questions];
         updatedQuestions[qIndex].options = updatedQuestions[qIndex].options.filter((_, i) => i !== oIndex);
         setQuestions(updatedQuestions);
     };
 
-    // 添加题目
+    // Add a new question
     const addQuestion = () => {
-        setQuestions([...questions, { title: '', options: [''] }]); // 添加一个空题目
+        setQuestions([...questions, { title: '', options: [''] }]); // Add an empty question
     };
 
-    // 删除题目
+    // Remove a question
     const removeQuestion = (index) => {
         setQuestions(questions.filter((_, i) => i !== index));
     };
 
-    // 提交表单
+    // Submit the form
     const handleSubmit = async (e) => {
-        e.preventDefault(); // 阻止默认提交行为
+        e.preventDefault(); // Prevent default form submission behavior
 
-        // 检查标题和描述是否填写
+        // Check if title and description are filled
         if (!title || !description) {
-            setMessage('请填写投票标题和描述！');
+            setMessage('Please enter the poll title and description!');
             return;
         }
 
-        // 检查每个题目是否有标题和至少一个选项
+        // Check if each question has a title and at least one option
         if (questions.some(q => !q.title || q.options.length === 0)) {
-            setMessage('每个题目必须有标题和至少一个选项！');
+            setMessage('Each question must have a title and at least one option!');
             return;
         }
 
-        // 检查每个选项是否有内容
+        // Check if each option has content
         if (questions.some(q => q.options.some(option => !option))) {
-            setMessage('请填写所有选项！');
+            setMessage('Please fill in all options!');
             return;
         }
 
@@ -75,54 +75,54 @@ const CreatePoll = () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ title, description, questions }),
             });
-            //我想看看传过去的json长什么样子
-            console.log('请求体:', { title, description, questions });
-            console.log('响应:', response);
+            // Log the request body for review
+            console.log('Request body:', { title, description, questions });
+            console.log('Response:', response);
 
             if (response.ok) {
-                setMessage('投票创建成功！');
-                setTitle(''); // 重置标题
-                setDescription(''); // 重置描述
-                setQuestions([{ title: '', options: [''] }]); // 重置题目和选项
+                setMessage('Poll created successfully!');
+                setTitle(''); // Reset title
+                setDescription(''); // Reset description
+                setQuestions([{ title: '', options: [''] }]); // Reset questions and options
             } else {
                 const errorData = await response.json();
-                setMessage(`创建失败: ${errorData.error}`);
+                setMessage(`Creation failed: ${errorData.error}`);
             }
         } catch (error) {
-            setMessage(`请求失败: ${error.message}`);
+            setMessage(`Request failed: ${error.message}`);
         }
     };
 
     return (
         <div className="create-poll-container">
-            <h1 className="create-poll-title">创建新投票</h1>
+            <h1 className="create-poll-title">Create New Poll</h1>
             <form onSubmit={handleSubmit} className="create-poll-form">
                 <div>
-                    <label>投票标题：</label>
+                    <label>Poll Title:</label>
                     <input
                         type="text"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
-                        placeholder="请输入投票标题"
+                        placeholder="Enter poll title"
                     />
                 </div>
                 <div>
-                    <label>投票描述：</label>
+                    <label>Poll Description:</label>
                     <textarea
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
-                        placeholder="请输入投票描述"
+                        placeholder="Enter poll description"
                     />
                 </div>
                 {questions.map((question, qIndex) => (
                     <div key={qIndex} className="question-container">
                         <div>
-                            <label>题目 {qIndex + 1}：</label>
+                            <label>Question {qIndex + 1}:</label>
                             <input
                                 type="text"
                                 value={question.title}
                                 onChange={(e) => handleQuestionTitleChange(qIndex, e.target.value)}
-                                placeholder="请输入题目标题"
+                                placeholder="Enter question title"
                             />
                             {questions.length > 1 && (
                                 <button
@@ -130,19 +130,19 @@ const CreatePoll = () => {
                                     onClick={() => removeQuestion(qIndex)}
                                     className="delete-button"
                                 >
-                                    删除题目
+                                    Remove Question
                                 </button>
                             )}
                         </div>
                         <div>
-                            <label>选项：</label>
+                            <label>Options:</label>
                             {question.options.map((option, oIndex) => (
                                 <div key={oIndex} className="option-container">
                                     <input
                                         type="text"
                                         value={option}
                                         onChange={(e) => handleOptionChange(qIndex, oIndex, e.target.value)}
-                                        placeholder={`选项 ${oIndex + 1}`}
+                                        placeholder={`Option ${oIndex + 1}`}
                                     />
                                     {question.options.length > 1 && (
                                         <button
@@ -150,7 +150,7 @@ const CreatePoll = () => {
                                             onClick={() => removeOption(qIndex, oIndex)}
                                             className="delete-button"
                                         >
-                                            删除选项
+                                            Remove Option
                                         </button>
                                     )}
                                 </div>
@@ -160,7 +160,7 @@ const CreatePoll = () => {
                                 onClick={() => addOption(qIndex)}
                                 className="add-option-button"
                             >
-                                添加选项
+                                Add Option
                             </button>
                         </div>
                     </div>
@@ -171,13 +171,13 @@ const CreatePoll = () => {
                         onClick={addQuestion}
                         className="add-question-button"
                     >
-                        添加题目
+                        Add Question
                     </button>
                     <button
                         type="submit"
                         className="submit-button"
                     >
-                        提交
+                        Submit
                     </button>
                 </div>
             </form>
