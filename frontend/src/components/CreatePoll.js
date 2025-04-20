@@ -75,7 +75,7 @@ const CreatePoll = () => {
 
         try {
             // const response = await fetch('http://34.150.45.164:5000/api/createpoll', {
-            const response = await fetch('http://${apiHost}:5000/api/createpoll', { // Use environment variable for API host
+              const response = await fetch(`http://${apiHost}:5000/api/createpoll`, { // Use environment variable for API host
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ title, description, questions }),
