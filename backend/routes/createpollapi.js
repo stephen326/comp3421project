@@ -74,8 +74,10 @@ router.post('/', async (req, res) => {
         console.log('Transaction committed successfully!');
 
         // Return poll links
-        const queryLink = `http://34.150.45.164:80/query-page/${pollId}`; // Poll page link
-        const resultLink = `http://34.150.45.164:80/result-page/${pollId}`; // Result page link
+        // const queryLink = `http://34.150.45.164:80/query-page/${pollId}`; // Poll page link
+        // const resultLink = `http://34.150.45.164:80/result-page/${pollId}`; // Result page link
+        const queryLink = `http://${process.env.HOST}:80/query-page/${pollId}`; // Poll page link
+        const resultLink = `http://${process.env.HOST}:80/result-page/${pollId}`; // Result page link
         res.status(201).json({
             message: 'Poll created successfully!',
             queryLink,

@@ -60,5 +60,6 @@ io.on('connection', (socket) => {
 // Start the server
 // ==========================================
 server.listen(port, () => {
-    console.log(`Server running on http://34.150.45.164:${port}`);
+    // console.log(`Server running on http://34.150.45.164:${port}`);
+    console.log(`Server running on http://${process.env.HOST}:${port}`);
 });
