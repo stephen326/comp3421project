@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import '../styles/createpoll.css'; // Import styles
+const apiHost = process.env.REACT_APP_API_HOST; // Use environment variable for API host
 
 // Create Poll Component
 const CreatePoll = () => {

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
 import { useParams, useNavigate } from 'react-router-dom'; // Import useParams and useNavigate
+const apiHost = process.env.REACT_APP_API_HOST; // Use environment variable for API host
 
 // const socket = io('http://34.150.45.164:5000'); // 根据你的后端端口修改
 const socket = io(`http://${apiHost}:5000`); // 使用环境变量替换硬编码的 IP 地址

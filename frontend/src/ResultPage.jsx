@@ -5,6 +5,7 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import Chart from 'chart.js/auto';
 import 'tailwindcss/tailwind.css';
 import { useParams, useNavigate } from "react-router"; // Added useNavigate
+const apiHost = process.env.REACT_APP_API_HOST; // Use environment variable for API host
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
