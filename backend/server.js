@@ -6,48 +6,45 @@ const { initializeDatabase } = require('./db/initDb');
 
 // Import routes
 // ==========================================
-const dbTestRouter = require('./routes/dbTest');
-const pollsRouter = require('./routes/polls');
 const getResultRouter = require('./routes/getResult');
+const createpollRouter = require('./routes/createpollapi'); // Routes related to creating polls
 
 // Create Express app
 // ==========================================
 const app = express();
 const port = process.env.PORT || 5000;
 
-
 // Middleware
 // ==========================================
 app.use(cors());
 app.use(express.json());
 
-
-// 数据库初始化
+// Database initialization
 initializeDatabase()
     .then(() => {
-        console.log('数据库初始化完成！');
+        console.log('Database initialization completed!');
     })
     .catch((err) => {
-        console.error('数据库初始化失败:', err);
+        console.error('Database initialization failed:', err);
     });
-
-const createpollRouter = require('./routes/createpollapi'); // 创建投票相关的路由
 
 // Routes
 // ==========================================
 app.get('/', (req, res) => {
-    res.send('Welcome to the backend server! Use /api/db-test or /api/polls to access the APIs.');
+    res.send('Welcome to the backend server!');
 });
 
-app.use('/api/pollresult', getResultRouter); // 将获取投票结果的路由挂载到 /api/pollresult 路径
+app.use('/api/pollresult', getResultRouter); // Mount the route for fetching poll results to the /api/pollresult path
 
-// websocket register
+app.use('/api/createpoll', createpollRouter); // Mount the route for creating polls to the /api/createpoll path
+
+// WebSocket registration
 // ==========================================
 const http = require('http');
 const server = http.createServer(app);
 
 const { Server } = require('socket.io');
-const pollSocket = require('./pollSocket'); // 👈 你要创建的文件
+const pollSocket = require('./pollSocket'); // 👈 The file you need to create
 
 const io = new Server(server, {
     cors: {
@@ -56,11 +53,9 @@ const io = new Server(server, {
 });
 
 io.on('connection', (socket) => {
-    console.log('✅ 有客户端连接:', socket.id);
+    console.log('✅ A client connected:', socket.id);
     pollSocket(io, socket);
 });
-
-app.use('/api/createpoll', createpollRouter); // 将创建投票路由挂载到 /api/createpoll 路径
 
 // Start the server
 // ==========================================

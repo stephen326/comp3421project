@@ -93,9 +93,7 @@ const ResultPage = () => {
     setChartType(event.target.value);
   };
 
- 
-
-  // 美味的预制data(?)
+  // Predefined chart data
   const chartData = {
     labels: questions[selectedQuestion].options,
     datasets: [

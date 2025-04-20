@@ -1,10 +1,10 @@
 const mysql = require('mysql2/promise');
 const dotenv = require('dotenv');
 
-// 加载 .env 文件中的配置
+// Load configuration from .env file
 dotenv.config();
 
-// 创建一个不指定数据库的连接
+// Create a connection without specifying a database
 const connectionConfig = {
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -15,33 +15,33 @@ const connectionConfig = {
 async function initializeDatabase() {
     let connection;
     try {
-        // 连接到 MySQL 服务器（不指定数据库）
+        // Connect to MySQL server (without specifying a database)
         connection = await mysql.createConnection(connectionConfig);
-        console.log('成功连接到 MySQL 服务器！');
+        console.log('Successfully connected to MySQL server!');
 
-        // 检查数据库是否存在
+        // Check if the database exists
         const [rows] = await connection.query(`SHOW DATABASES LIKE '${process.env.DB_DATABASE}'`);
         if (rows.length === 0) {
-            // 如果数据库不存在，则创建数据库
+            // Create the database if it does not exist
             await connection.query(`CREATE DATABASE ${process.env.DB_DATABASE}`);
-            console.log(`数据库 ${process.env.DB_DATABASE} 创建成功！`);
+            console.log(`Database ${process.env.DB_DATABASE} created successfully!`);
         } else {
-            console.log(`数据库 ${process.env.DB_DATABASE} 已存在！`);
+            console.log(`Database ${process.env.DB_DATABASE} already exists!`);
         }
 
-        // 切换到目标数据库
+        // Switch to the target database
         await connection.query(`USE ${process.env.DB_DATABASE}`);
 
-        // 删除表（如果存在）
-        console.log('检查并删除表（如果存在）...');
+        // Drop tables if they exist
+        console.log('Checking and dropping tables if they exist...');
         await connection.query(`DROP TABLE IF EXISTS poll_options`);
-        console.log('表 poll_options 已删除（如果存在）');
+        console.log('Table poll_options dropped if it existed');
         await connection.query(`DROP TABLE IF EXISTS polls`);
-        console.log('表 polls 已删除（如果存在）');
+        console.log('Table polls dropped if it existed');
         await connection.query(`DROP TABLE IF EXISTS question`);
-        console.log('表 question 已删除（如果存在）');
+        console.log('Table question dropped if it existed');
 
-        // 创建投票表 (polls)
+        // Create polls table
         await connection.query(`
             CREATE TABLE IF NOT EXISTS polls (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -49,18 +49,18 @@ async function initializeDatabase() {
                 description TEXT
             );
         `);
-        console.log('表创建成功或已存在: polls');
+        console.log('Table created or already exists: polls');
 
-        // 创建问题表 (question)
+        // Create question table
         await connection.query(`
             CREATE TABLE IF NOT EXISTS question (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 question_text VARCHAR(255) NOT NULL
             );
         `);
-        console.log('表创建成功或已存在: question');
+        console.log('Table created or already exists: question');
 
-        // 创建投票选项表 (poll_options)
+        // Create poll_options table
         await connection.query(`
             CREATE TABLE IF NOT EXISTS poll_options (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -74,10 +74,10 @@ async function initializeDatabase() {
                 FOREIGN KEY (q_id) REFERENCES question(id) ON DELETE CASCADE
             );
         `);
-        console.log('表创建成功或已存在: poll_options');
+        console.log('Table created or already exists: poll_options');
 
       // FIXME: buggy
-      // 创建示例问卷数据，一个问题四个选项
+      // Insert sample survey data, one question with four options
       await connection.query(`
       INSERT INTO polls (title, description) VALUES
 ('Favorite Hobbies Survey', 'A survey to understand your favorite hobbies.'),
@@ -92,7 +92,7 @@ async function initializeDatabase() {
 ('What type of city vibe do you prefer?'),
 ('How long would you like to stay in a city?');
 `);
-      // 选项
+      // Options
       await connection.query(`
       INSERT INTO poll_options (poll_id, q_id, question_id, option_id, option_text, vote_count) VALUES
 -- Poll 1: Favorite Hobbies Survey
@@ -123,13 +123,13 @@ async function initializeDatabase() {
       (2, 6, 3, 3, 'Permanently', 11);
         `);
     } catch (err) {
-      console.error('初始化数据库时出错:', err);
+      console.error('Error initializing database:', err);
     } finally {
         if (connection) {
-            await connection.end(); // 关闭连接
+            await connection.end(); // Close the connection
         }
     }
 }
 
-// 导出函数供其他模块调用
+// Export the function for use in other modules
 module.exports = { initializeDatabase };

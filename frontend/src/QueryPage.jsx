@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
-import { useParams, useNavigate } from 'react-router-dom'; // 导入 useParams 和 useNavigate
+import { useParams, useNavigate } from 'react-router-dom'; // Import useParams and useNavigate
 
 const socket = io('http://34.150.45.164:5000'); // 根据你的后端端口修改
 
@@ -30,7 +30,7 @@ const surveyData = {
 const QueryPage = () => {
   const [survey, setSurvey] = useState(surveyData);
   const [responses, setResponses] = useState({});
-  const { pollId } = useParams(); // 获取 URL 中的 pollId 参数
+  const { pollId } = useParams(); // Get pollId parameter from URL
   const navigate = useNavigate(); // Initialize navigate
 
   useEffect(() => {
@@ -58,7 +58,7 @@ const QueryPage = () => {
         console.error("Error fetching poll data:", error);
         setSurvey(null); // Set survey to null to indicate an error
         navigate('/not-found'); // Navigate to NotFoundPage
-        alert('Not exist!');
+        alert('Poll does not exist!');
 
       }
     };
@@ -76,19 +76,19 @@ const QueryPage = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // 检查是否回答了所有问题
+    // Check if all questions are answered
     const allAnswered = survey.questions.every(question => responses[question.id]);
     if (!allAnswered) {
         alert("Please answer all questions before submitting.");
         return;
     }
 
-    socket.emit('vote', { pollId, answers: responses }); // 使用动态 pollId
+    socket.emit('vote', { pollId, answers: responses }); // Use dynamic pollId
     navigate(`/thank/${pollId}`); // Navigate to Thank.jsx with pollId
   };
 
   if (!survey) {
-    return <div>Loading...</div>; // 加载中的占位符
+    return <div>Loading...</div>; // Placeholder for loading
   }
 
   return (
