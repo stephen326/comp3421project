@@ -6,17 +6,17 @@ module.exports = (io, socket) => {
             // Join new room
             socket.leaveAll(); // Leave all previous rooms
             socket.join(`poll-${pollId}`);
-            console.log(`[joinPollRoom] 用户已加入房间: poll-${pollId}`);
+            console.log(`[joinPollRoom] User has joined room: poll-${pollId}`);
         } catch (err) {
-            console.error('[joinPollRoom] 出错:', err);
+            console.error('[joinPollRoom] Error:', err);
         }
     });
 
     socket.on('vote', async ({ pollId, answers }) => {
-        console.log(`[vote] 用户投票，pollId: ${pollId}, answers: ${JSON.stringify(answers)}`);
-      try {
-            // 构建批量更新的 SQL 查询
-          const updatePromises = Object.entries(answers).map(([ questionId, optionId ]) =>
+        console.log(`[vote] User voted, pollId: ${pollId}, answers: ${JSON.stringify(answers)}`);
+        try {
+            // Build batch update SQL query
+            const updatePromises = Object.entries(answers).map(([ questionId, optionId ]) =>
                 pool.query(
                     `UPDATE poll_options SET vote_count = vote_count + 1 WHERE option_id = ? AND question_id = ? AND poll_id = ?`,
                     [optionId, questionId, pollId]
@@ -24,7 +24,7 @@ module.exports = (io, socket) => {
             );
             await Promise.all(updatePromises);
 
-            // 查询所有更新后的选项
+            // Query all updated options
             const updatedOptionsQuery = `
                 SELECT question_id, option_id, vote_count
                 FROM poll_options
@@ -33,20 +33,20 @@ module.exports = (io, socket) => {
             const queryParams = [pollId];
             const [updatedOptions] = await pool.query(updatedOptionsQuery, queryParams);
 
-          // turn into 2d array, using defending programming (?)
-          const arrayData = Object.values(Object.groupBy(updatedOptions, (opt) => opt.question_id)).map((opts) => opts.sort((a, b) => a.option_id - b.option_id).map((opt) => opt.vote_count));
+            // Turn into 2D array, using defensive programming
+            const arrayData = Object.values(Object.groupBy(updatedOptions, (opt) => opt.question_id)).map((opts) => opts.sort((a, b) => a.option_id - b.option_id).map((opt) => opt.vote_count));
 
-            // 广播更新后的选项，并加入 pollId
+            // Broadcast updated options with pollId
             io.to(`poll-${pollId}`).emit('updateVotes', { pollId, arrayData });
-          console.log(`[vote] 广播更新后的投票选项:`, { pollId, updatedOptions, arrayData });
+            console.log(`[vote] Broadcast updated voting options:`, { pollId, updatedOptions, arrayData });
         } catch (err) {
-            console.error('[vote] 出错:', err);
-            socket.emit('voteError', { message: '投票失败，请稍后重试。' });
+            console.error('[vote] Error:', err);
+            socket.emit('voteError', { message: 'Voting failed, please try again later.' });
         }
     });
 };
 
-// vote 事件的 payload 结构：
+// Payload structure for the vote event:
 // {
 //     "pollId": 1,
 //     "answers": [
@@ -55,7 +55,7 @@ module.exports = (io, socket) => {
 //     ]
 //   }
 
-// 每次vote后 广播的数据结构：
+// Data structure broadcasted after each vote:
 // {
 //     "pollId": 1,
 //     "updatedOptions": [

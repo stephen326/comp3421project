@@ -1,30 +1,30 @@
 const mysql = require('mysql2');
 const dotenv = require('dotenv');
 
-// 加载 .env 文件中的配置
+// Load configuration from .env file
 dotenv.config();
 
-// 创建数据库连接池
+// Create a database connection pool
 const pool = mysql.createPool({
-    host: process.env.DB_HOST,       // 从 .env 文件中读取数据库主机
-    user: process.env.DB_USER,       // 从 .env 文件中读取数据库用户名
-    password: process.env.DB_PASSWORD, // 从 .env 文件中读取数据库密码
-    database: process.env.DB_DATABASE, // 从 .env 文件中读取数据库名称
-    port: process.env.DB_PORT,       // 从 .env 文件中读取数据库端口
+    host: process.env.DB_HOST,       // Read database host from .env file
+    user: process.env.DB_USER,       // Read database username from .env file
+    password: process.env.DB_PASSWORD, // Read database password from .env file
+    database: process.env.DB_DATABASE, // Read database name from .env file
+    port: process.env.DB_PORT,       // Read database port from .env file
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
 });
 
-// 测试数据库连接
+// Test database connection
 pool.getConnection((err, connection) => {
     if (err) {
-        console.error('连接数据库时出错:', err);
+        console.error('Error connecting to the database:', err);
     } else {
-        console.log('成功连接到 MySQL 服务器！');
+        console.log('Successfully connected to the MySQL server!');
         connection.release();
     }
 });
 
-// 导出数据库连接池
+// Export the database connection pool
 module.exports = pool.promise();

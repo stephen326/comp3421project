@@ -1,4 +1,4 @@
-/* 页面背景渐变 */
+/* Page background gradient */
 body {
     @apply bg-gradient-to-r from-purple-200 via-pink-100 to-indigo-100; /* Softer, lower saturation gradient */
     min-height: 100vh;

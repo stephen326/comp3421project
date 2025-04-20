@@ -1,32 +1,31 @@
 const express = require('express');
 const router = express.Router();
-const pool = require('../db/db'); // 导入连接池
+const pool = require('../db/db'); // Import connection pool
 
 router.get('/:pollId', async (req, res) => {
     const { pollId } = req.params;
 
     if (!pollId) {
-        return res.status(400).json({ error: '投票 ID 不能为空！' });
+        return res.status(400).json({ error: 'Poll ID cannot be empty!' });
     }
     if (isNaN(pollId)) {
-        return res.status(400).json({ error: '投票 ID 必须是数字！' });
+        return res.status(400).json({ error: 'Poll ID must be a number!' });
     }
 
-
     try {
-        // 查询投票的标题和描述
+        // Query poll title and description
         const [pollResult] = await pool.query(
             'SELECT title, description FROM polls WHERE id = ?',
             [pollId]
         );
 
         if (pollResult.length === 0) {
-            return res.status(404).json({ error: '未找到该投票！', message: '无效的投票 ID，请检查输入。' });
+            return res.status(404).json({ error: 'Poll not found!', message: 'Invalid poll ID, please check your input.' });
         }
 
         const poll = pollResult[0];
 
-        // 查询问题和选项
+        // Query questions and options
         const [questionsResult] = await pool.query(
             `SELECT 
                 q.id AS question_id, 
@@ -40,7 +39,7 @@ router.get('/:pollId', async (req, res) => {
             [pollId, pollId]
         );
 
-        // 将查询结果转换为所需的格式
+        // Transform query results into the desired format
         const questions = questionsResult.reduce((acc, row) => {
             const { question_id, question_text, option_id, option_text, vote_count } = row;
 
@@ -70,14 +69,14 @@ router.get('/:pollId', async (req, res) => {
             questions: Object.values(questions),
         });
     } catch (error) {
-        console.error('查询投票结果时出错:', error);
-        res.status(500).json({ error: '服务器错误，请稍后重试。' });
+        console.error('Error querying poll results:', error);
+        res.status(500).json({ error: 'Server error, please try again later.' });
     }
 });
 
 module.exports = router;
 
-// 期望返回的数据结构：
+// Expected return data structure:
 // {
 //     "pollId": 1,
 //     "title": "Favorite Hobbies Survey",

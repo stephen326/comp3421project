@@ -41,7 +41,7 @@ const resultData = [
   [50, 30, 15]
 ];
 
-const socket = io('http://localhost:5000'); // 根据你的后端端口修改
+const socket = io('http://localhost:5000'); // Update based on your backend port
 
 const ResultPage = () => {
   const [selectedQuestion, setSelectedQuestion] = useState(0);
@@ -93,9 +93,7 @@ const ResultPage = () => {
     setChartType(event.target.value);
   };
 
- 
-
-  // 美味的预制data(?)
+  // Predefined chart data
   const chartData = {
     labels: questions[selectedQuestion].options,
     datasets: [

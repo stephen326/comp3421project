@@ -4,10 +4,10 @@ import React from 'react';
 import ResultPage from './ResultPage';
 import QueryPage from './QueryPage';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import CreatePoll from './components/CreatePoll'; // 导入创建投票组件
-import Home from './components/Home'; // 导入主页组件
-import Thank from './Thank'; // 导入感谢页面组件
-import NotFoundPage from './NotFoundPage'; // Import NotFoundPage
+import CreatePoll from './components/CreatePoll'; // Import CreatePoll component
+import Home from './components/Home'; // Import Home component
+import Thank from './Thank'; // Import Thank component
+import NotFoundPage from './NotFoundPage'; // Import NotFoundPage component
 
 function App() {
   return (
@@ -15,8 +15,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/create-poll" element={<CreatePoll />} />
-        <Route path="/query-page/:pollId" element={<QueryPage />} /> {/* 动态路由 */}
-        <Route path="/result-page/:pollId" element={<ResultPage />} /> {/* 动态路由 */}
+        <Route path="/query-page/:pollId" element={<QueryPage />} /> {/* Dynamic route */}
+        <Route path="/result-page/:pollId" element={<ResultPage />} /> {/* Dynamic route */}
         <Route path="/thank/:pollId" element={<Thank />} />
         <Route path="/not-found" element={<NotFoundPage />} /> {/* Add NotFoundPage route */}
       </Routes>
@@ -24,4 +24,4 @@ function App() {
   );
 }
 
-export default App; // 导出 App 组件，供其他文件使用
+export default App; // Export App component for use in other files
